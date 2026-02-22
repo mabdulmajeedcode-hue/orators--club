@@ -1,0 +1,135 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { MapPin, Mail, Phone, Facebook, Instagram, Linkedin, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const Contact = () => {
+  const { toast } = useToast();
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", subject: "General Inquiry", message: "" });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({ title: "Message sent!", description: "We'll get back to you soon." });
+    setForm({ firstName: "", lastName: "", email: "", subject: "General Inquiry", message: "" });
+  };
+
+  return (
+    <div className="min-h-screen pt-16">
+      {/* Hero */}
+      <section className="py-20 text-center bg-card">
+        <div className="container">
+          <span className="section-badge mb-4 inline-block">Get in Touch</span>
+          <h1 className="section-heading text-4xl md:text-6xl">
+            Let's Start a <span className="gradient-text">Conversation</span>
+          </h1>
+          <p className="text-muted-foreground mt-4 max-w-lg mx-auto">
+            Have questions about membership, upcoming debates, or partnership opportunities? We're here to listen.
+          </p>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-20">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Form */}
+            <motion.form
+              onSubmit={handleSubmit}
+              className="rounded-xl border border-border p-8 space-y-5"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Mail className="h-5 w-5 text-primary" />
+                <h2 className="font-display font-semibold text-xl">Send us a message</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">First Name</label>
+                  <Input placeholder="Jane" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Last Name</label>
+                  <Input placeholder="Doe" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} required />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Email Address</label>
+                <Input type="email" placeholder="jane@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Subject</label>
+                <select
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={form.subject}
+                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                >
+                  <option>General Inquiry</option>
+                  <option>Membership</option>
+                  <option>Events</option>
+                  <option>Partnership</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Message</label>
+                <Textarea rows={5} placeholder="How can we help you?" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required />
+              </div>
+              <Button type="submit" className="w-full" size="lg">
+                Send Message <Send className="ml-2 h-4 w-4" />
+              </Button>
+            </motion.form>
+
+            {/* Info + Map */}
+            <div className="space-y-6">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="rounded-xl border border-border p-6">
+                  <MapPin className="h-5 w-5 text-primary mb-3" />
+                  <h3 className="font-display font-semibold mb-2">Visit Us</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Muffakham Jah College of Engineering & Technology<br />
+                    Road No. 3, Banjara Hills<br />
+                    Hyderabad - 500034
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border p-6">
+                  <Mail className="h-5 w-5 text-primary mb-3" />
+                  <h3 className="font-display font-semibold mb-2">Contact Info</h3>
+                  <p className="text-sm text-muted-foreground">info@oratorsclub.com</p>
+                  <p className="text-sm text-muted-foreground">+91 40 2354 2020</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                {[Facebook, Instagram, Linkedin].map((Icon, i) => (
+                  <a key={i} href="#" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                    <Icon className="h-4 w-4" />
+                    {["Facebook", "Instagram", "LinkedIn"][i]}
+                  </a>
+                ))}
+              </div>
+
+              {/* Map */}
+              <div className="rounded-xl overflow-hidden border border-border h-64">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.2!2d78.4390!3d17.4160!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb917f68e0e4ef%3A0x16c58f8bf4e89ec1!2sMuffakham%20Jah%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  title="MJCET Location"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Contact;
