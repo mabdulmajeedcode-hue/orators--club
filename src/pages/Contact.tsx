@@ -5,20 +5,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", subject: "General Inquiry", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message sent!", description: "We'll get back to you soon." });
-    setForm({ firstName: "", lastName: "", email: "", subject: "General Inquiry", message: "" });
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("contact_messages").insert({
+        name: `${form.firstName.trim()} ${form.lastName.trim()}`,
+        email: form.email.trim(),
+        subject: form.subject,
+        message: form.message.trim(),
+      });
+      if (error) throw error;
+      toast({ title: "Message sent!", description: "We'll get back to you soon." });
+      setForm({ firstName: "", lastName: "", email: "", subject: "General Inquiry", message: "" });
+    } catch {
+      toast({ title: "Error", description: "Failed to send. Please try again.", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen pt-16">
-      {/* Hero */}
       <section className="py-20 text-center bg-card">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Get in Touch</span>
@@ -31,11 +46,9 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Content */}
       <section className="py-20">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-12">
-            {/* Form */}
             <motion.form
               onSubmit={handleSubmit}
               className="rounded-xl border border-border p-8 space-y-5"
@@ -78,12 +91,11 @@ const Contact = () => {
                 <label className="text-sm font-medium mb-1 block">Message</label>
                 <Textarea rows={5} placeholder="How can we help you?" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required />
               </div>
-              <Button type="submit" className="w-full" size="lg">
-                Send Message <Send className="ml-2 h-4 w-4" />
+              <Button type="submit" className="w-full" size="lg" disabled={submitting}>
+                {submitting ? "Sending..." : <>Send Message <Send className="ml-2 h-4 w-4" /></>}
               </Button>
             </motion.form>
 
-            {/* Info + Map */}
             <div className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="rounded-xl border border-border p-6">
@@ -112,7 +124,6 @@ const Contact = () => {
                 ))}
               </div>
 
-              {/* Map */}
               <div className="rounded-xl overflow-hidden border border-border h-64">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.2!2d78.4390!3d17.4160!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb917f68e0e4ef%3A0x16c58f8bf4e89ec1!2sMuffakham%20Jah%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"

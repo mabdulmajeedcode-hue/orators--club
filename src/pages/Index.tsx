@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Trophy, Mic, Users, Award, Calendar, Headphones } from "lucide-react";
+import { ArrowRight, BookOpen, Trophy, Mic, Users, Award, Calendar, Headphones, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
 import missionImg from "@/assets/mission.jpg";
 
@@ -25,6 +29,31 @@ const stats = [
 ];
 
 const Index = () => {
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
+
+  const handleNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubscribing(true);
+    try {
+      const { error } = await supabase.from("newsletter_subscribers").insert({ email: email.trim() });
+      if (error) {
+        if (error.code === "23505") {
+          toast({ title: "Already subscribed!", description: "This email is already on our list." });
+        } else throw error;
+      } else {
+        toast({ title: "Subscribed!", description: "You'll receive updates from Orators Club." });
+        setEmail("");
+      }
+    } catch {
+      toast({ title: "Error", description: "Failed to subscribe. Try again.", variant: "destructive" });
+    } finally {
+      setSubscribing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -68,24 +97,12 @@ const Index = () => {
       <section className="py-24">
         <div className="container">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <img src={missionImg} alt="Students in discussion" className="rounded-xl w-full aspect-[4/3] object-cover" />
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="section-badge mb-4 inline-block">About Us</span>
-              <h2 className="section-heading text-3xl md:text-4xl mb-4">
-                Our <span className="gradient-text">Mission</span>
-              </h2>
+              <h2 className="section-heading text-3xl md:text-4xl mb-4">Our <span className="gradient-text">Mission</span></h2>
               <div className="w-12 h-1 bg-primary rounded mb-6" />
               <p className="text-muted-foreground leading-relaxed mb-4">
                 The Orators Club empowers students to master the art of persuasion, structured argumentation, and impactful communication.
@@ -145,6 +162,28 @@ const Index = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <section className="py-24 bg-card">
+        <div className="container max-w-2xl text-center">
+          <span className="section-badge mb-4 inline-block">Stay Updated</span>
+          <h2 className="section-heading text-3xl md:text-4xl mb-4">Join Our <span className="gradient-text">Newsletter</span></h2>
+          <p className="text-muted-foreground mb-8">Get the latest updates on events, workshops, and club activities delivered to your inbox.</p>
+          <form onSubmit={handleNewsletter} className="flex gap-3 max-w-md mx-auto">
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="flex-1"
+            />
+            <Button type="submit" disabled={subscribing}>
+              {subscribing ? "..." : <><Send className="h-4 w-4 mr-2" /> Subscribe</>}
+            </Button>
+          </form>
         </div>
       </section>
 
