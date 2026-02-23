@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const faqs = [
   { q: "What is the time commitment?", a: "Most members spend 3-5 hours per week on club activities including weekly meetings and practice sessions." },
@@ -15,20 +16,37 @@ const faqs = [
 
 const Join = () => {
   const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "", year: "", experience: "", reason: "",
   });
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Application submitted!", description: "We'll review your application and get back to you soon." });
-    setForm({ firstName: "", lastName: "", email: "", phone: "", year: "", experience: "", reason: "" });
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("join_applications").insert({
+        first_name: form.firstName.trim(),
+        last_name: form.lastName.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        academic_year: form.year,
+        debate_experience: form.experience || null,
+        why_join: form.reason.trim() || null,
+      });
+      if (error) throw error;
+      toast({ title: "Application submitted!", description: "We'll review your application and get back to you soon." });
+      setForm({ firstName: "", lastName: "", email: "", phone: "", year: "", experience: "", reason: "" });
+    } catch {
+      toast({ title: "Error", description: "Failed to submit. Please try again.", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen pt-16">
-      {/* Hero */}
       <section className="py-20 text-center">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Join the Club</span>
@@ -41,7 +59,6 @@ const Join = () => {
         </div>
       </section>
 
-      {/* Form */}
       <section className="py-12">
         <div className="container max-w-2xl">
           <motion.form
@@ -119,13 +136,14 @@ const Join = () => {
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit" size="lg">Submit Application</Button>
+              <Button type="submit" size="lg" disabled={submitting}>
+                {submitting ? "Submitting..." : "Submit Application"}
+              </Button>
             </div>
           </motion.form>
         </div>
       </section>
 
-      {/* FAQs */}
       <section className="py-20 bg-card">
         <div className="container max-w-2xl text-center">
           <h2 className="font-display text-3xl font-bold uppercase mb-2">Membership FAQs</h2>

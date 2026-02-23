@@ -14,7 +14,174 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          category: string
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          image: string | null
+          slug: string
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          date: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          slug: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      gallery: {
+        Row: {
+          caption: string | null
+          category: string
+          created_at: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: []
+      }
+      join_applications: {
+        Row: {
+          academic_year: string
+          created_at: string
+          debate_experience: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string | null
+          why_join: string | null
+        }
+        Insert: {
+          academic_year: string
+          created_at?: string
+          debate_experience?: string | null
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          phone?: string | null
+          why_join?: string | null
+        }
+        Update: {
+          academic_year?: string
+          created_at?: string
+          debate_experience?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string | null
+          why_join?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      podcasts: {
+        Row: {
+          created_at: string
+          description: string | null
+          embed_url: string | null
+          id: string
+          image: string | null
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          embed_url?: string | null
+          id?: string
+          image?: string | null
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          embed_url?: string | null
+          id?: string
+          image?: string | null
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
