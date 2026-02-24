@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { AudioLines, Facebook, Instagram, Linkedin, Mail } from "lucide-react";
+import { AudioLines, Instagram, Linkedin, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -42,13 +42,20 @@ const Footer = () => {
           <div>
             <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider">Connect</h4>
             <div className="flex gap-3 mb-4">
-              <a href="#" className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href="#" className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a
+                href="https://www.instagram.com/oratorsclubmjcet?igsh=cGtnYzFjamlteDY2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a
+                href="https://www.linkedin.com/company/orators-club-mjcet/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Linkedin className="h-4 w-4" />
               </a>
             </div>
