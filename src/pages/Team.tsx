@@ -1,78 +1,224 @@
-import { motion } from "framer-motion";
-import { Users } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
-const faculty = [
-  { name: "Dr. Amina Khan", role: "Faculty Advisor", desc: "Professor of English Literature with 15+ years of debate coaching experience." },
-  { name: "Prof. Rajesh Sharma", role: "Co-Advisor", desc: "Specializes in rhetoric and communication studies at MJCET." },
-];
-
-const coreTeam = [
-  { name: "Sarah Jenkins", role: "President", desc: "National debate champion with a passion for policy and public discourse." },
-  { name: "Michael Chen", role: "VP of Debate", desc: "Specializes in impromptu speaking and curriculum development for new members." },
-  { name: "Amara Okafor", role: "Secretary", desc: "Ensures smooth operations and organizes our quarterly regional meetings." },
-  { name: "David Ross", role: "Treasurer", desc: "Manages club finances and spearheads our annual fundraising gala." },
-  { name: "Priya Mehta", role: "Events Head", desc: "Coordinates all workshops, competitions, and guest lecture series." },
-  { name: "Ahmed Hassan", role: "PR Head", desc: "Manages social media presence and external communications." },
-];
-
-const PersonCard = ({ person, i }: { person: typeof coreTeam[0]; i: number }) => (
-  <motion.div
-    className="text-center"
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.08 }}
-  >
-    <div className="w-28 h-28 rounded-full bg-secondary border-2 border-border mx-auto mb-4 flex items-center justify-center">
-      <Users className="h-10 w-10 text-muted-foreground" />
-    </div>
-    <h3 className="font-display font-semibold">{person.name}</h3>
-    <p className="text-primary text-sm font-medium uppercase tracking-wider mb-2">{person.role}</p>
-    <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">{person.desc}</p>
-  </motion.div>
-);
+const departments = ["PR", "HR", "Operations", "Media", "Technical", "Research", "Documentation", "Marketing"];
 
 const Team = () => {
+  const [coreFilter, setCoreFilter] = useState("PR");
+  const [govPage, setGovPage] = useState(0);
+
+  const { data: members = [] } = useQuery({
+    queryKey: ["team-members"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("team_members").select("*").order("created_at");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const governing = members.filter((m) => m.section === "Governing Body");
+  const execom = members.filter((m) => m.section === "Execom");
+  const core = members.filter((m) => m.section === "Core");
+
+  const filteredCore = core.filter((m) => m.department === coreFilter);
+
+  const govPerPage = 4;
+  const govPages = Math.ceil(governing.length / govPerPage);
+  const govSlice = governing.slice(govPage * govPerPage, (govPage + 1) * govPerPage);
+
   return (
     <div className="min-h-screen pt-16">
       {/* Hero */}
       <section className="py-20 text-center">
         <div className="container">
-          <span className="section-badge mb-4 inline-block">Our People</span>
+          <span className="section-badge mb-4 inline-block">Organisational Hierarchy</span>
           <h1 className="section-heading text-4xl md:text-5xl mb-4">
-            Meet the <span className="gradient-text">Team</span>
+            Our <span className="gradient-text italic">Leadership</span>
           </h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Meet the voices guiding the next generation of speakers.
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Structured for excellence, driven by passion. Meet the tiers of talent shaping the future of eloquence at MJCET.
           </p>
         </div>
       </section>
 
-      {/* Faculty */}
-      <section className="py-16 bg-card">
+      {/* Governing Body */}
+      <section className="py-16">
         <div className="container">
-          <h2 className="font-display text-2xl font-bold text-center mb-12">Faculty <span className="gradient-text">Advisors</span></h2>
-          <div className="grid sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            {faculty.map((f, i) => (
-              <PersonCard key={f.name} person={f} i={i} />
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-display text-2xl font-bold">Governing Body</h2>
+              <div className="w-16 h-0.5 bg-primary mt-2" />
+            </div>
+            {govPages > 1 && (
+              <div className="flex gap-2">
+                <Button size="icon" variant="outline" className="h-8 w-8" disabled={govPage === 0} onClick={() => setGovPage(govPage - 1)}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button size="icon" variant="outline" className="h-8 w-8" disabled={govPage >= govPages - 1} onClick={() => setGovPage(govPage + 1)}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {govSlice.map((m, i) => (
+              <GoverningCard key={m.id} member={m} i={i} />
             ))}
+            {governing.length === 0 && <EmptyState text="No governing body members yet." />}
           </div>
         </div>
       </section>
 
-      {/* Core Team */}
+      {/* EXECOM */}
+      <section className="py-16 bg-card">
+        <div className="container">
+          <div className="mb-10">
+            <h2 className="font-display text-2xl font-bold">
+              EXECOM <span className="gradient-text">2024</span>
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">Executive Committee driving the functional departments.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+            {execom.map((m, i) => (
+              <ExecomCard key={m.id} member={m} i={i} />
+            ))}
+            {execom.length === 0 && <EmptyState text="No execom members yet." />}
+          </div>
+        </div>
+      </section>
+
+      {/* Core Members */}
       <section className="py-20">
         <div className="container">
-          <h2 className="font-display text-2xl font-bold text-center mb-12">Core <span className="gradient-text">Team</span></h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-            {coreTeam.map((p, i) => (
-              <PersonCard key={p.name} person={p} i={i} />
+          <div className="mb-10">
+            <h2 className="font-display text-2xl font-bold">
+              <span className="italic">CORE</span> Members Portfolios
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">The engine room of Orators Club activities, organized by specialized departments.</p>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+            {departments.map((dep) => (
+              <button
+                key={dep}
+                onClick={() => setCoreFilter(dep)}
+                className={`px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all ${
+                  coreFilter === dep
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                {dep}
+              </button>
             ))}
           </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={coreFilter}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+            >
+              <h3 className="font-display font-semibold text-lg mb-6 flex items-center gap-2">
+                <span className="w-6 h-px bg-primary" />
+                {coreFilter} Core
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                {filteredCore.map((m, i) => (
+                  <CoreCard key={m.id} member={m} i={i} />
+                ))}
+              </div>
+              {filteredCore.length === 0 && <EmptyState text={`No ${coreFilter} Core members yet.`} />}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
     </div>
   );
 };
+
+type Member = { id: string; name: string; role: string; image_url: string | null; section: string; department: string | null };
+
+const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.08 }}
+  >
+    {member.image_url ? (
+      <img src={member.image_url} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+    ) : (
+      <div className="w-full h-full bg-secondary flex items-center justify-center">
+        <Users className="h-12 w-12 text-muted-foreground" />
+      </div>
+    )}
+    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+    <div className="absolute bottom-0 left-0 right-0 p-4">
+      <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+      <p className="text-primary text-xs font-semibold uppercase tracking-wider">{member.role}</p>
+    </div>
+  </motion.div>
+);
+
+const ExecomCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="rounded-xl border border-border bg-background overflow-hidden group card-hover"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.06 }}
+  >
+    <div className="aspect-square overflow-hidden">
+      {member.image_url ? (
+        <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      ) : (
+        <div className="w-full h-full bg-secondary flex items-center justify-center">
+          <Users className="h-10 w-10 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+    <div className="p-3">
+      <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+      <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
+    </div>
+  </motion.div>
+);
+
+const CoreCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="rounded-xl border border-border bg-card overflow-hidden group card-hover"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.06 }}
+  >
+    <div className="aspect-square overflow-hidden">
+      {member.image_url ? (
+        <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      ) : (
+        <div className="w-full h-full bg-secondary flex items-center justify-center">
+          <Users className="h-10 w-10 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+    <div className="p-3">
+      <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+      <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
+    </div>
+  </motion.div>
+);
+
+const EmptyState = ({ text }: { text: string }) => (
+  <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{text}</div>
+);
 
 export default Team;

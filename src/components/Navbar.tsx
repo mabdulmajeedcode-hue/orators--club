@@ -2,16 +2,17 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, AudioLines } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
-{ label: "Home", path: "/" },
-{ label: "About", path: "/about" },
-{ label: "Events", path: "/events" },
-{ label: "Podcasts", path: "/podcasts" },
-{ label: "Gallery", path: "/gallery" },
-{ label: "Team", path: "/team" },
-{ label: "Contact", path: "/contact" }];
-
+  { label: "Home", path: "/" },
+  { label: "About", path: "/about" },
+  { label: "Events", path: "/events" },
+  { label: "Podcasts", path: "/podcasts" },
+  { label: "Gallery", path: "/gallery" },
+  { label: "Team", path: "/team" },
+  { label: "Contact", path: "/contact" },
+];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -27,55 +28,59 @@ const Navbar = () => {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) =>
-          <Link
-            key={link.path}
-            to={link.path}
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-            location.pathname === link.path ? "text-primary" : "text-muted-foreground"}`
-            }>
-
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                location.pathname === link.path ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
               {link.label}
             </Link>
-          )}
+          ))}
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-2">
+          <ThemeToggle />
           <Button asChild size="sm">
             <Link to="/join">Join Now</Link>
           </Button>
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
+          <button className="text-foreground" onClick={() => setOpen(!open)}>
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
-      {open &&
-      <div className="md:hidden bg-background border-b border-border">
+      {open && (
+        <div className="md:hidden bg-background border-b border-border">
           <div className="container py-4 flex flex-col gap-3">
-            {navLinks.map((link) =>
-          <Link
-            key={link.path}
-            to={link.path}
-            className={`text-sm font-medium py-2 transition-colors hover:text-primary ${
-            location.pathname === link.path ? "text-primary" : "text-muted-foreground"}`
-            }
-            onClick={() => setOpen(false)}>
-
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-sm font-medium py-2 transition-colors hover:text-primary ${
+                  location.pathname === link.path ? "text-primary" : "text-muted-foreground"
+                }`}
+                onClick={() => setOpen(false)}
+              >
                 {link.label}
               </Link>
-          )}
+            ))}
             <Button asChild size="sm" className="w-fit mt-2">
               <Link to="/join" onClick={() => setOpen(false)}>Join Now</Link>
             </Button>
           </div>
         </div>
-      }
-    </nav>);
-
+      )}
+    </nav>
+  );
 };
 
 export default Navbar;

@@ -182,6 +182,36 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          created_at: string
+          department: string | null
+          id: string
+          image_url: string | null
+          name: string
+          role: string
+          section: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          role: string
+          section: string
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          role?: string
+          section?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
