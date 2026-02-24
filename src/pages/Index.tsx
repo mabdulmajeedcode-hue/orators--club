@@ -98,7 +98,7 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
         <div className="container">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <img src={missionImg} alt="Students in discussion" className="rounded-xl w-full aspect-[4/3] object-cover" />
+              <img alt="Students in discussion" className="rounded-xl w-full aspect-[4/3] object-cover" src="/lovable-uploads/b8f2ab81-e795-4e5d-98f0-be01a5c4ae35.jpg" />
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="section-badge mb-4 inline-block">About Us</span>
