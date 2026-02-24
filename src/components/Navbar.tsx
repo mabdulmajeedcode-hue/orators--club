@@ -7,14 +7,14 @@ import logoDark from "@/assets/logo-dark.png";
 import logoLight from "@/assets/logo-light.png";
 
 const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Events", path: "/events" },
-  { label: "Podcasts", path: "/podcasts" },
-  { label: "Gallery", path: "/gallery" },
-  { label: "Team", path: "/team" },
-  { label: "Contact", path: "/contact" },
-];
+{ label: "Home", path: "/" },
+{ label: "About", path: "/about" },
+{ label: "Events", path: "/events" },
+{ label: "Podcasts", path: "/podcasts" },
+{ label: "Gallery", path: "/gallery" },
+{ label: "Team", path: "/team" },
+{ label: "Contact", path: "/contact" }];
+
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -36,24 +36,24 @@ const Navbar = () => {
           <img
             src={isLight ? logoLight : logoDark}
             alt="Orators' Club Logo"
-            className="h-10 w-auto"
-          />
-          <span>ORATORS' CLUB</span>
+            className="h-10 w-auto" />
+
+          <span>
+          </span>
         </Link>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
+          {navLinks.map((link) => <Link
               key={link.path}
               to={link.path}
               className={`text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === link.path ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
+              location.pathname === link.path ? "text-primary" : "text-muted-foreground"}`
+              }>
+
               {link.label}
             </Link>
-          ))}
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-2">
@@ -73,29 +73,29 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden bg-background border-b border-border">
+      {open &&
+      <div className="md:hidden bg-background border-b border-border">
           <div className="container py-4 flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`text-sm font-medium py-2 transition-colors hover:text-primary ${
-                  location.pathname === link.path ? "text-primary" : "text-muted-foreground"
-                }`}
-                onClick={() => setOpen(false)}
-              >
+            {navLinks.map((link) =>
+          <Link
+            key={link.path}
+            to={link.path}
+            className={`text-sm font-medium py-2 transition-colors hover:text-primary ${
+            location.pathname === link.path ? "text-primary" : "text-muted-foreground"}`
+            }
+            onClick={() => setOpen(false)}>
+
                 {link.label}
               </Link>
-            ))}
+          )}
             <Button asChild size="sm" className="w-fit mt-2">
               <Link to="/join" onClick={() => setOpen(false)}>Join Now</Link>
             </Button>
           </div>
         </div>
-      )}
-    </nav>
-  );
+      }
+    </nav>);
+
 };
 
 export default Navbar;

@@ -11,22 +11,22 @@ import missionImg from "@/assets/mission.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6 } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6 } })
 };
 
 const features = [
-  { icon: BookOpen, title: "Workshops", desc: "Weekly training sessions focused on rhetoric, logic, and delivery mechanics." },
-  { icon: Trophy, title: "Competitions", desc: "Regional and national debate tournaments to test your skills against the best." },
-  { icon: Users, title: "Community", desc: "A lifelong network of alumni, mentors, and peers who share your passion." },
-  { icon: Mic, title: "Podcast Series", desc: "Listen to debates, speeches, and interviews from our club members." },
-];
+{ icon: BookOpen, title: "Workshops", desc: "Weekly training sessions focused on rhetoric, logic, and delivery mechanics." },
+{ icon: Trophy, title: "Competitions", desc: "Regional and national debate tournaments to test your skills against the best." },
+{ icon: Users, title: "Community", desc: "A lifelong network of alumni, mentors, and peers who share your passion." },
+{ icon: Mic, title: "Podcast Series", desc: "Listen to debates, speeches, and interviews from our club members." }];
+
 
 const stats = [
-  { icon: Trophy, value: "50+", label: "Active Members" },
-  { icon: Calendar, value: "200+", label: "Events Conducted" },
-  { icon: Award, value: "12", label: "Major Wins" },
-  { icon: Headphones, value: "9", label: "Annual Workshops" },
-];
+{ icon: Trophy, value: "50+", label: "Active Members" },
+{ icon: Calendar, value: "200+", label: "Events Conducted" },
+{ icon: Award, value: "12", label: "Major Wins" },
+{ icon: Headphones, value: "9", label: "Annual Workshops" }];
+
 
 const Index = () => {
   const { toast } = useToast();
@@ -64,25 +64,25 @@ const Index = () => {
         </div>
         <div className="container relative z-10 text-center py-32">
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-            <span className="section-badge mb-6 inline-block">Dept. of English, MJCET</span>
+            <span className="section-badge mb-6 inline-block">A FLAGSHIP OF DEPARTMENT OF ENGLISH, MJCET</span>
           </motion.div>
           <motion.h1
             className="section-heading text-5xl md:text-7xl lg:text-8xl mb-6"
-            initial="hidden" animate="visible" variants={fadeUp} custom={1}
-          >
+            initial="hidden" animate="visible" variants={fadeUp} custom={1}>
+
             Where Voices Become{" "}
             <span className="gradient-text">Impact</span>
           </motion.h1>
           <motion.p
             className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10"
-            initial="hidden" animate="visible" variants={fadeUp} custom={2}
-          >
-            Orators Club is the premier public speaking and debate society of MJCET, cultivating confidence, articulation, and leadership through structured dialogue and competitive excellence.
+            initial="hidden" animate="visible" variants={fadeUp} custom={2}>Orators Club is the premier public speaking and debate society of MJCET, 
+Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally.
+
           </motion.p>
           <motion.div
             className="flex flex-wrap justify-center gap-4"
-            initial="hidden" animate="visible" variants={fadeUp} custom={3}
-          >
+            initial="hidden" animate="visible" variants={fadeUp} custom={3}>
+
             <Button size="lg" asChild>
               <Link to="/join">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
@@ -123,22 +123,22 @@ const Index = () => {
             <h2 className="section-heading text-3xl md:text-4xl">Core <span className="gradient-text">Features</span></h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.title}
-                className="p-6 rounded-xl border border-border bg-background card-hover"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
+            {features.map((f, i) =>
+            <motion.div
+              key={f.title}
+              className="p-6 rounded-xl border border-border bg-background card-hover"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}>
+
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <f.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
               </motion.div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -147,20 +147,20 @@ const Index = () => {
       <section className="py-24">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((s, i) => (
-              <motion.div
-                key={s.label}
-                className="text-center"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
+            {stats.map((s, i) =>
+            <motion.div
+              key={s.label}
+              className="text-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}>
+
                 <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
                 <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">{s.value}</div>
                 <div className="text-sm text-muted-foreground uppercase tracking-wider">{s.label}</div>
               </motion.div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -178,8 +178,8 @@ const Index = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex-1"
-            />
+              className="flex-1" />
+
             <Button type="submit" disabled={subscribing}>
               {subscribing ? "..." : <><Send className="h-4 w-4 mr-2" /> Subscribe</>}
             </Button>
@@ -204,8 +204,8 @@ const Index = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
