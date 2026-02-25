@@ -70,8 +70,8 @@ const Index = () => {
             className="section-heading text-5xl md:text-7xl lg:text-8xl mb-6"
             initial="hidden" animate="visible" variants={fadeUp} custom={1}>
 
-            Where Voices Become{" "}
-            <span className="gradient-text">Impact</span>
+            ORATORS'{" "}
+            <span className="gradient-text">CLUB</span>
           </motion.h1>
           <motion.p
             className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10"
