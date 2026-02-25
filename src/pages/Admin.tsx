@@ -124,19 +124,19 @@ const EventsAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "" });
+  const [form, setForm] = useState({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "" });
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["admin-events"],
     queryFn: async () => { const { data, error } = await supabase.from("events").select("*").order("date", { ascending: false }); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "" }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "" }); setEditing(null); setShowForm(false); };
 
   const handleSave = async () => {
     if (!form.title || !form.date || !form.slug) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
     try {
-      const payload = { title: form.title, description: form.description, date: form.date, category: form.category, image: form.image || null, slug: form.slug };
+      const payload = { title: form.title, description: form.description, date: form.date, category: form.category, image: form.image || null, slug: form.slug, registration_link: form.registration_link || null };
       if (editing) { const { error } = await supabase.from("events").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("events").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] });
@@ -146,7 +146,7 @@ const EventsAdmin = () => {
 
   const handleDelete = async (id: string) => { await supabase.from("events").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] }); toast({ title: "Event deleted" }); };
 
-  const startEdit = (e: any) => { setForm({ title: e.title, description: e.description || "", date: e.date?.split("T")[0] || "", category: e.category, image: e.image || "", slug: e.slug }); setEditing(e); setShowForm(true); };
+  const startEdit = (e: any) => { setForm({ title: e.title, description: e.description || "", date: e.date?.split("T")[0] || "", category: e.category, image: e.image || "", slug: e.slug, registration_link: e.registration_link || "" }); setEditing(e); setShowForm(true); };
 
   return (
     <div>
@@ -169,6 +169,7 @@ const EventsAdmin = () => {
             </div>
           </div>
           <ImageUpload bucket="events-images" value={form.image} onChange={(url) => setForm({ ...form, image: url })} />
+          <div><label className="text-sm font-medium block mb-1">Google Form Registration Link</label><Input placeholder="https://forms.google.com/..." value={form.registration_link} onChange={(e) => setForm({ ...form, registration_link: e.target.value })} /></div>
           <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
