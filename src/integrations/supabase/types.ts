@@ -49,6 +49,7 @@ export type Database = {
           description: string | null
           id: string
           image: string | null
+          registration_link: string | null
           slug: string
           title: string
         }
@@ -59,6 +60,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          registration_link?: string | null
           slug: string
           title: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          registration_link?: string | null
           slug?: string
           title?: string
         }

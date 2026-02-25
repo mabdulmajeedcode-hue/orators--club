@@ -36,7 +36,7 @@ const Navbar = () => {
           <img
             src={isLight ? logoLight : logoDark}
             alt="Orators' Club Logo"
-            className="h-10 w-auto" />
+            className="h-12 w-auto" />
 
           <span>
           </span>
