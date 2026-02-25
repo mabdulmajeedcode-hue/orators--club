@@ -18,23 +18,22 @@ const Events = () => {
       const { data, error } = await supabase
         .from("events")
         .select("*")
+        .order("display_order", { ascending: true })
         .order("date", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const now = new Date();
-
   const filtered = events.filter((e) => {
     if (activeTab === "All Events") return true;
-    const eventDate = new Date(e.date);
-    if (activeTab === "Upcoming") return eventDate >= now;
-    if (activeTab === "Past") return eventDate < now;
+    const status = (e as any).status || "upcoming";
+    if (activeTab === "Upcoming") return status === "upcoming";
+    if (activeTab === "Past") return status === "past";
     return true;
   });
 
-  const isUpcoming = (dateStr: string) => new Date(dateStr) >= now;
+  const isUpcoming = (e: any) => (e.status || "upcoming") === "upcoming";
 
   return (
     <div className="min-h-screen pt-16">
@@ -83,7 +82,7 @@ const Events = () => {
                 transition={{ duration: 0.3 }}
               >
                 {filtered.map((event, i) => {
-                  const upcoming = isUpcoming(event.date);
+                  const upcoming = isUpcoming(event);
                   return (
                     <motion.div
                       key={event.id}

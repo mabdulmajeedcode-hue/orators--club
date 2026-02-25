@@ -47,10 +47,12 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
+          display_order: number
           id: string
           image: string | null
           registration_link: string | null
           slug: string
+          status: string
           title: string
         }
         Insert: {
@@ -58,10 +60,12 @@ export type Database = {
           created_at?: string
           date: string
           description?: string | null
+          display_order?: number
           id?: string
           image?: string | null
           registration_link?: string | null
           slug: string
+          status?: string
           title: string
         }
         Update: {
@@ -69,10 +73,12 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string | null
+          display_order?: number
           id?: string
           image?: string | null
           registration_link?: string | null
           slug?: string
+          status?: string
           title?: string
         }
         Relationships: []
