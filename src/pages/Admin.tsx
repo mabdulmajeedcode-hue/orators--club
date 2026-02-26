@@ -9,7 +9,7 @@ import { Trash2, Plus, Edit2, LogOut, Loader2, Upload, Image as ImageIcon, Arrow
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { uploadImage } from "@/lib/upload";
 
-const ADMIN_PASSWORD = "orators2024";
+const ADMIN_PASSWORD = "orators2025";
 
 const SECTION_ROLES: Record<string, string[]> = {
   "Governing Body": ["Chief Coordinator", "Chief Representative", "Chief Strategist"],
@@ -124,19 +124,19 @@ const EventsAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "", status: "upcoming", display_order: 0 });
+  const [form, setForm] = useState({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "", status: "upcoming", display_order: 0, event_type: "external" });
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["admin-events"],
     queryFn: async () => { const { data, error } = await supabase.from("events").select("*").order("display_order", { ascending: true }).order("date", { ascending: false }); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "", status: "upcoming", display_order: 0 }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "", status: "upcoming", display_order: 0, event_type: "external" }); setEditing(null); setShowForm(false); };
 
   const handleSave = async () => {
     if (!form.title || !form.date || !form.slug) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
     try {
-      const payload = { title: form.title, description: form.description, date: form.date, category: form.category, image: form.image || null, slug: form.slug, registration_link: form.registration_link || null, status: form.status, display_order: form.display_order };
+      const payload = { title: form.title, description: form.description, date: form.date, category: form.category, image: form.image || null, slug: form.slug, registration_link: form.registration_link || null, status: form.status, display_order: form.display_order, event_type: form.event_type };
       if (editing) { const { error } = await supabase.from("events").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("events").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] });
@@ -146,7 +146,7 @@ const EventsAdmin = () => {
 
   const handleDelete = async (id: string) => { await supabase.from("events").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] }); toast({ title: "Event deleted" }); };
 
-  const startEdit = (e: any) => { setForm({ title: e.title, description: e.description || "", date: e.date?.split("T")[0] || "", category: e.category, image: e.image || "", slug: e.slug, registration_link: e.registration_link || "", status: e.status || "upcoming", display_order: e.display_order || 0 }); setEditing(e); setShowForm(true); };
+  const startEdit = (e: any) => { setForm({ title: e.title, description: e.description || "", date: e.date?.split("T")[0] || "", category: e.category, image: e.image || "", slug: e.slug, registration_link: e.registration_link || "", status: e.status || "upcoming", display_order: e.display_order || 0, event_type: e.event_type || "external" }); setEditing(e); setShowForm(true); };
 
   const moveEvent = async (id: string, direction: "up" | "down") => {
     const idx = events.findIndex((e: any) => e.id === id);
@@ -181,10 +181,15 @@ const EventsAdmin = () => {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div><label className="text-sm font-medium block mb-1">Status *</label>
               <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                 <option value="upcoming">Upcoming</option><option value="past">Past</option>
+              </select>
+            </div>
+            <div><label className="text-sm font-medium block mb-1">Event Type *</label>
+              <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.event_type} onChange={(e) => setForm({ ...form, event_type: e.target.value })}>
+                <option value="external">External Event</option><option value="internal">Internal Event</option>
               </select>
             </div>
             <div><label className="text-sm font-medium block mb-1">Display Order</label><Input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} /></div>
@@ -207,7 +212,7 @@ const EventsAdmin = () => {
                 {e.image && <img src={e.image} alt="" className="h-10 w-10 rounded object-cover" />}
                 <div>
                   <h3 className="font-medium">{e.title}</h3>
-                  <p className="text-xs text-muted-foreground">{e.category} · {e.date?.split("T")[0]} · <span className={e.status === "upcoming" ? "text-primary" : "text-muted-foreground"}>{e.status === "upcoming" ? "Upcoming" : "Past"}</span></p>
+                  <p className="text-xs text-muted-foreground">{e.category} · {e.date?.split("T")[0]} · <span className={e.status === "upcoming" ? "text-primary" : "text-muted-foreground"}>{e.status === "upcoming" ? "Upcoming" : "Past"}</span> · {(e as any).event_type === "internal" ? "Internal" : "External"}</p>
                 </div>
               </div>
               <div className="flex gap-2">

@@ -48,6 +48,7 @@ export type Database = {
           date: string
           description: string | null
           display_order: number
+          event_type: string
           id: string
           image: string | null
           registration_link: string | null
@@ -61,6 +62,7 @@ export type Database = {
           date: string
           description?: string | null
           display_order?: number
+          event_type?: string
           id?: string
           image?: string | null
           registration_link?: string | null
@@ -74,6 +76,7 @@ export type Database = {
           date?: string
           description?: string | null
           display_order?: number
+          event_type?: string
           id?: string
           image?: string | null
           registration_link?: string | null
