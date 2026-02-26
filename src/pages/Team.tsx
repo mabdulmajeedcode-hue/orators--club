@@ -78,7 +78,7 @@ const Team = () => {
         <div className="container">
           <div className="mb-10">
             <h2 className="font-display text-2xl font-bold">
-              EXECOM <span className="gradient-text">2024</span>
+              EXECOM <span className="gradient-text">2025</span>
             </h2>
             <p className="text-sm text-muted-foreground mt-1">Executive Committee driving the functional departments.</p>
           </div>
