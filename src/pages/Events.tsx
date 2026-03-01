@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
@@ -10,14 +10,16 @@ import { format } from "date-fns";
 const tabs = ["All Events", "Upcoming", "Past"];
 
 const EventCard = ({ event, i }: { event: any; i: number }) => {
+  const [expanded, setExpanded] = useState(false);
   const upcoming = event.status === "upcoming";
+
   return (
     <motion.div
-      key={event.id}
-      className="rounded-xl border border-border bg-card overflow-hidden card-hover"
+      className="rounded-xl border border-border bg-card overflow-hidden card-hover cursor-pointer"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.05, duration: 0.4 }}
+      onClick={() => setExpanded(!expanded)}
     >
       <div className="relative h-48 bg-secondary flex items-center justify-center">
         {event.image && (
@@ -37,24 +39,37 @@ const EventCard = ({ event, i }: { event: any; i: number }) => {
       <div className="p-5">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary">{event.category}</span>
         <h3 className="font-display font-semibold text-lg mt-1 mb-2">{event.title}</h3>
-        <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-3">{event.description}</p>
-        {upcoming ? (
-          event.registration_link ? (
-            <Button size="sm" className="w-full" asChild>
-              <a
-                href={event.registration_link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Register Now <ArrowRight className="ml-2 h-3 w-3" />
-              </a>
-            </Button>
-          ) : null
-        ) : (
-          <Badge variant="outline" className="w-full justify-center py-2 text-muted-foreground">
-            <CheckCircle className="h-3 w-3 mr-1" /> Event Concluded
-          </Badge>
-        )}
+        <p className={`text-sm text-muted-foreground mb-4 leading-relaxed ${expanded ? "" : "line-clamp-3"}`}>{event.description}</p>
+
+        <AnimatePresence>
+          {expanded && event.description && event.description.length > 150 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            />
+          )}
+        </AnimatePresence>
+
+        <div className="flex items-center justify-between">
+          {upcoming ? (
+            event.registration_link ? (
+              <Button size="sm" asChild onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                <a href={event.registration_link} target="_blank" rel="noopener noreferrer">
+                  Register Now <ArrowRight className="ml-2 h-3 w-3" />
+                </a>
+              </Button>
+            ) : <span />
+          ) : (
+            <Badge variant="outline" className="py-2 text-muted-foreground">
+              <CheckCircle className="h-3 w-3 mr-1" /> Event Concluded
+            </Badge>
+          )}
+          <button className="text-muted-foreground hover:text-foreground transition-colors p-1" onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}>
+            {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -132,7 +147,6 @@ const Events = () => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                {/* External Events */}
                 {externalEvents.length > 0 && (
                   <div className="mb-16">
                     <h2 className="font-display text-2xl font-bold mb-2">External Events</h2>
@@ -144,8 +158,6 @@ const Events = () => {
                     </div>
                   </div>
                 )}
-
-                {/* Internal Events */}
                 {internalEvents.length > 0 && (
                   <div>
                     <h2 className="font-display text-2xl font-bold mb-2">Internal Events</h2>

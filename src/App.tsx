@@ -5,11 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SitePopup from "@/components/SitePopup";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Events from "./pages/Events";
 import Podcasts from "./pages/Podcasts";
 import Gallery from "./pages/Gallery";
+import GalleryDetail from "./pages/GalleryDetail";
 import Team from "./pages/Team";
 import Contact from "./pages/Contact";
 import Join from "./pages/Join";
@@ -25,12 +27,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Navbar />
+        <SitePopup />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
           <Route path="/podcasts" element={<Podcasts />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/gallery/:id" element={<GalleryDetail />} />
           <Route path="/team" element={<Team />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/join" element={<Join />} />

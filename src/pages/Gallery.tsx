@@ -1,26 +1,21 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, Image as ImageIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 const Gallery = () => {
-  const [filter, setFilter] = useState("All");
-
-  const { data: galleryItems = [], isLoading } = useQuery({
-    queryKey: ["gallery"],
+  const { data: galleryEvents = [], isLoading } = useQuery({
+    queryKey: ["gallery-events"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("gallery")
-        .select("*")
+        .from("gallery_events")
+        .select("*, gallery_event_images(id)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
-
-  const categories = ["All", ...new Set(galleryItems.map((g) => g.category))];
-  const filtered = filter === "All" ? galleryItems : galleryItems.filter((g) => g.category === filter);
 
   return (
     <div className="min-h-screen pt-16">
@@ -33,44 +28,39 @@ const Gallery = () => {
             </h1>
           </div>
 
-          {galleryItems.length > 0 && (
-            <div className="flex justify-center gap-2 mb-10 flex-wrap">
-              {categories.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setFilter(c)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
-                    filter === c
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "border-border text-muted-foreground hover:border-primary/50"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          )}
-
           {isLoading ? (
             <div className="flex justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : galleryEvents.length === 0 ? (
             <p className="text-center text-muted-foreground py-20">No gallery items yet.</p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filtered.map((item, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryEvents.map((ge: any, i: number) => (
                 <motion.div
-                  key={item.id}
-                  className="group relative aspect-square rounded-xl overflow-hidden bg-secondary border border-border card-hover"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.05 }}
+                  key={ge.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
                 >
-                  <img src={item.image_url} alt={item.caption || ""} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <p className="text-sm font-medium">{item.caption}</p>
-                  </div>
+                  <Link to={`/gallery/${ge.id}`} className="block">
+                    <div className="rounded-xl border border-border bg-card overflow-hidden group card-hover">
+                      <div className="aspect-video overflow-hidden bg-secondary">
+                        {ge.cover_image ? (
+                          <img src={ge.cover_image} alt={ge.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-display font-semibold text-lg">{ge.title}</h3>
+                        {ge.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{ge.description}</p>}
+                        <p className="text-xs text-primary mt-2">{ge.gallery_event_images?.length || 0} photos</p>
+                      </div>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
