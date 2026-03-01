@@ -110,6 +110,62 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery_event_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          gallery_event_id: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          gallery_event_id: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          gallery_event_id?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_event_images_gallery_event_id_fkey"
+            columns: ["gallery_event_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_events: {
+        Row: {
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       join_applications: {
         Row: {
           academic_year: string
@@ -194,12 +250,49 @@ export type Database = {
         }
         Relationships: []
       }
+      popups: {
+        Row: {
+          created_at: string
+          cta_link: string | null
+          cta_text: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_link?: string | null
+          cta_text?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_link?: string | null
+          cta_text?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           created_at: string
           department: string | null
           id: string
           image_url: string | null
+          linkedin_url: string | null
           name: string
           role: string
           section: string
@@ -209,6 +302,7 @@ export type Database = {
           department?: string | null
           id?: string
           image_url?: string | null
+          linkedin_url?: string | null
           name: string
           role: string
           section: string
@@ -218,6 +312,7 @@ export type Database = {
           department?: string | null
           id?: string
           image_url?: string | null
+          linkedin_url?: string | null
           name?: string
           role?: string
           section?: string

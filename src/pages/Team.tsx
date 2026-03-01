@@ -1,11 +1,114 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users, ChevronLeft, ChevronRight, Linkedin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 const departments = ["PR", "HR", "Operations", "Media", "Technical", "Research", "Documentation", "Marketing"];
+
+type Member = {
+  id: string;
+  name: string;
+  role: string;
+  image_url: string | null;
+  section: string;
+  department: string | null;
+  linkedin_url?: string | null;
+};
+
+const LinkedInIcon = ({ url }: { url?: string | null }) => {
+  if (!url) return null;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex text-primary hover:text-primary/80 transition-colors" onClick={(e) => e.stopPropagation()}>
+      <Linkedin className="h-4 w-4" />
+    </a>
+  );
+};
+
+const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.08 }}
+  >
+    {member.image_url ? (
+      <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+    ) : (
+      <div className="w-full h-full bg-secondary flex items-center justify-center">
+        <Users className="h-12 w-12 text-muted-foreground" />
+      </div>
+    )}
+    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+    <div className="absolute bottom-0 left-0 right-0 p-4">
+      <div className="flex items-center gap-2">
+        <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+        <LinkedInIcon url={member.linkedin_url} />
+      </div>
+      <p className="text-primary text-xs font-semibold uppercase tracking-wider">{member.role}</p>
+    </div>
+  </motion.div>
+);
+
+const ExecomCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="rounded-xl border border-border bg-background overflow-hidden group card-hover"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.06 }}
+  >
+    <div className="aspect-square overflow-hidden">
+      {member.image_url ? (
+        <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      ) : (
+        <div className="w-full h-full bg-secondary flex items-center justify-center">
+          <Users className="h-10 w-10 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+    <div className="p-3">
+      <div className="flex items-center gap-2">
+        <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+        <LinkedInIcon url={member.linkedin_url} />
+      </div>
+      <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
+    </div>
+  </motion.div>
+);
+
+const CoreCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="rounded-xl border border-border bg-card overflow-hidden group card-hover"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.06 }}
+  >
+    <div className="aspect-square overflow-hidden">
+      {member.image_url ? (
+        <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      ) : (
+        <div className="w-full h-full bg-secondary flex items-center justify-center">
+          <Users className="h-10 w-10 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+    <div className="p-3">
+      <div className="flex items-center gap-2">
+        <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+        <LinkedInIcon url={member.linkedin_url} />
+      </div>
+      <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
+    </div>
+  </motion.div>
+);
+
+const EmptyState = ({ text }: { text: string }) => (
+  <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{text}</div>
+);
 
 const Team = () => {
   const [coreFilter, setCoreFilter] = useState("PR");
@@ -20,11 +123,10 @@ const Team = () => {
     },
   });
 
-  const governing = members.filter((m) => m.section === "Governing Body");
-  const execom = members.filter((m) => m.section === "Execom");
-  const core = members.filter((m) => m.section === "Core");
-
-  const filteredCore = core.filter((m) => m.department === coreFilter);
+  const governing = members.filter((m: any) => m.section === "Governing Body");
+  const execom = members.filter((m: any) => m.section === "Execom");
+  const core = members.filter((m: any) => m.section === "Core");
+  const filteredCore = core.filter((m: any) => m.department === coreFilter);
 
   const govPerPage = 4;
   const govPages = Math.ceil(governing.length / govPerPage);
@@ -32,7 +134,6 @@ const Team = () => {
 
   return (
     <div className="min-h-screen pt-16">
-      {/* Hero */}
       <section className="py-20 text-center">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Organisational Hierarchy</span>
@@ -65,7 +166,7 @@ const Team = () => {
             )}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {govSlice.map((m, i) => (
+            {govSlice.map((m: any, i: number) => (
               <GoverningCard key={m.id} member={m} i={i} />
             ))}
             {governing.length === 0 && <EmptyState text="No governing body members yet." />}
@@ -83,7 +184,7 @@ const Team = () => {
             <p className="text-sm text-muted-foreground mt-1">Executive Committee driving the functional departments.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-            {execom.map((m, i) => (
+            {execom.map((m: any, i: number) => (
               <ExecomCard key={m.id} member={m} i={i} />
             ))}
             {execom.length === 0 && <EmptyState text="No execom members yet." />}
@@ -100,8 +201,6 @@ const Team = () => {
             </h2>
             <p className="text-sm text-muted-foreground mt-1">The engine room of Orators Club activities, organized by specialized departments.</p>
           </div>
-
-          {/* Filter Tabs */}
           <div className="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
             {departments.map((dep) => (
               <button
@@ -117,7 +216,6 @@ const Team = () => {
               </button>
             ))}
           </div>
-
           <AnimatePresence mode="wait">
             <motion.div
               key={coreFilter}
@@ -131,7 +229,7 @@ const Team = () => {
                 {coreFilter} Core
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                {filteredCore.map((m, i) => (
+                {filteredCore.map((m: any, i: number) => (
                   <CoreCard key={m.id} member={m} i={i} />
                 ))}
               </div>
@@ -143,82 +241,5 @@ const Team = () => {
     </div>
   );
 };
-
-type Member = { id: string; name: string; role: string; image_url: string | null; section: string; department: string | null };
-
-const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
-  <motion.div
-    className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.08 }}
-  >
-    {member.image_url ? (
-      <img src={member.image_url} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-    ) : (
-      <div className="w-full h-full bg-secondary flex items-center justify-center">
-        <Users className="h-12 w-12 text-muted-foreground" />
-      </div>
-    )}
-    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-    <div className="absolute bottom-0 left-0 right-0 p-4">
-      <h3 className="font-display font-semibold text-sm">{member.name}</h3>
-      <p className="text-primary text-xs font-semibold uppercase tracking-wider">{member.role}</p>
-    </div>
-  </motion.div>
-);
-
-const ExecomCard = ({ member, i }: { member: Member; i: number }) => (
-  <motion.div
-    className="rounded-xl border border-border bg-background overflow-hidden group card-hover"
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.06 }}
-  >
-    <div className="aspect-square overflow-hidden">
-      {member.image_url ? (
-        <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-      ) : (
-        <div className="w-full h-full bg-secondary flex items-center justify-center">
-          <Users className="h-10 w-10 text-muted-foreground" />
-        </div>
-      )}
-    </div>
-    <div className="p-3">
-      <h3 className="font-display font-semibold text-sm">{member.name}</h3>
-      <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
-    </div>
-  </motion.div>
-);
-
-const CoreCard = ({ member, i }: { member: Member; i: number }) => (
-  <motion.div
-    className="rounded-xl border border-border bg-card overflow-hidden group card-hover"
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.06 }}
-  >
-    <div className="aspect-square overflow-hidden">
-      {member.image_url ? (
-        <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-      ) : (
-        <div className="w-full h-full bg-secondary flex items-center justify-center">
-          <Users className="h-10 w-10 text-muted-foreground" />
-        </div>
-      )}
-    </div>
-    <div className="p-3">
-      <h3 className="font-display font-semibold text-sm">{member.name}</h3>
-      <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
-    </div>
-  </motion.div>
-);
-
-const EmptyState = ({ text }: { text: string }) => (
-  <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{text}</div>
-);
 
 export default Team;

@@ -59,14 +59,16 @@ const Admin = () => {
             <TabsTrigger value="podcasts">Podcasts</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
+            <TabsTrigger value="popup">Popup</TabsTrigger>
             <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
             <TabsTrigger value="applications">Applications</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
           <TabsContent value="events"><EventsAdmin /></TabsContent>
           <TabsContent value="podcasts"><PodcastsAdmin /></TabsContent>
-          <TabsContent value="gallery"><GalleryAdmin /></TabsContent>
+          <TabsContent value="gallery"><GalleryEventsAdmin /></TabsContent>
           <TabsContent value="team"><TeamAdmin /></TabsContent>
+          <TabsContent value="popup"><PopupAdmin /></TabsContent>
           <TabsContent value="subscribers"><SubscribersView /></TabsContent>
           <TabsContent value="applications"><ApplicationsView /></TabsContent>
           <TabsContent value="messages"><MessagesView /></TabsContent>
@@ -118,7 +120,7 @@ const ImageUpload = ({ bucket, value, onChange, label = "Image" }: { bucket: str
   );
 };
 
-// ---- Events Admin (with image upload) ----
+// ---- Events Admin ----
 const EventsAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -212,7 +214,7 @@ const EventsAdmin = () => {
                 {e.image && <img src={e.image} alt="" className="h-10 w-10 rounded object-cover" />}
                 <div>
                   <h3 className="font-medium">{e.title}</h3>
-                  <p className="text-xs text-muted-foreground">{e.category} · {e.date?.split("T")[0]} · <span className={e.status === "upcoming" ? "text-primary" : "text-muted-foreground"}>{e.status === "upcoming" ? "Upcoming" : "Past"}</span> · {(e as any).event_type === "internal" ? "Internal" : "External"}</p>
+                  <p className="text-xs text-muted-foreground">{e.category} · {e.date?.split("T")[0]} · <span className={e.status === "upcoming" ? "text-primary" : "text-muted-foreground"}>{e.status === "upcoming" ? "Upcoming" : "Past"}</span> · {e.event_type === "internal" ? "Internal" : "External"}</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -227,7 +229,7 @@ const EventsAdmin = () => {
   );
 };
 
-// ---- Podcasts Admin ----
+// ---- Podcasts Admin (with image upload) ----
 const PodcastsAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -268,8 +270,8 @@ const PodcastsAdmin = () => {
             <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
             <div><label className="text-sm font-medium block mb-1">Slug *</label><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} /></div>
           </div>
-          <div><label className="text-sm font-medium block mb-1">Embed URL</label><Input value={form.embed_url} onChange={(e) => setForm({ ...form, embed_url: e.target.value })} /></div>
-          <div><label className="text-sm font-medium block mb-1">Image URL</label><Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} /></div>
+          <div><label className="text-sm font-medium block mb-1">YouTube URL</label><Input value={form.embed_url} onChange={(e) => setForm({ ...form, embed_url: e.target.value })} /></div>
+          <ImageUpload bucket="podcast-images" value={form.image} onChange={(url) => setForm({ ...form, image: url })} label="Podcast Thumbnail" />
           <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
@@ -278,7 +280,10 @@ const PodcastsAdmin = () => {
         <div className="space-y-2">
           {podcasts.map((p: any) => (
             <div key={p.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
-              <div><h3 className="font-medium">{p.title}</h3><p className="text-xs text-muted-foreground">{p.slug}</p></div>
+              <div className="flex items-center gap-3">
+                {p.image && <img src={p.image} alt="" className="h-10 w-10 rounded object-cover" />}
+                <div><h3 className="font-medium">{p.title}</h3><p className="text-xs text-muted-foreground">{p.slug}</p></div>
+              </div>
               <div className="flex gap-2">
                 <Button size="icon" variant="ghost" onClick={() => startEdit(p)}><Edit2 className="h-4 w-4" /></Button>
                 <Button size="icon" variant="ghost" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -291,74 +296,135 @@ const PodcastsAdmin = () => {
   );
 };
 
-// ---- Gallery Admin (with file upload + multi-upload) ----
-const GalleryAdmin = () => {
+// ---- Gallery Events Admin ----
+const GalleryEventsAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [category, setCategory] = useState("Events");
-  const [caption, setCaption] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [editing, setEditing] = useState<any>(null);
+  const [form, setForm] = useState({ title: "", description: "", cover_image: "" });
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const multiFileRef = useRef<HTMLInputElement>(null);
 
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["admin-gallery"],
-    queryFn: async () => { const { data, error } = await supabase.from("gallery").select("*").order("created_at", { ascending: false }); if (error) throw error; return data; },
+  const { data: galleryEvents = [], isLoading } = useQuery({
+    queryKey: ["admin-gallery-events"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("gallery_events").select("*, gallery_event_images(id, image_url, caption)").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
   });
 
-  const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetForm = () => { setForm({ title: "", description: "", cover_image: "" }); setEditing(null); setShowForm(false); };
+
+  const handleSave = async () => {
+    if (!form.title) { toast({ title: "Title is required", variant: "destructive" }); return; }
+    try {
+      const payload = { title: form.title, description: form.description || null, cover_image: form.cover_image || null };
+      if (editing) {
+        const { error } = await supabase.from("gallery_events").update(payload).eq("id", editing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("gallery_events").insert(payload);
+        if (error) throw error;
+      }
+      qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
+      qc.invalidateQueries({ queryKey: ["gallery-events"] });
+      toast({ title: editing ? "Updated" : "Gallery created" });
+      resetForm();
+    } catch { toast({ title: "Error saving", variant: "destructive" }); }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from("gallery_events").delete().eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
+      qc.invalidateQueries({ queryKey: ["gallery-events"] });
+      toast({ title: "Gallery deleted" });
+    } catch { toast({ title: "Error deleting", variant: "destructive" }); }
+  };
+
+  const handleAddImages = async (galleryEventId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    setUploading(true);
+    setUploadingImages(true);
     try {
       for (const file of Array.from(files)) {
         const url = await uploadImage("gallery-images", file);
-        await supabase.from("gallery").insert({ image_url: url, category, caption: caption || null });
+        await supabase.from("gallery_event_images").insert({ gallery_event_id: galleryEventId, image_url: url });
       }
-      qc.invalidateQueries({ queryKey: ["admin-gallery"] }); qc.invalidateQueries({ queryKey: ["gallery"] });
+      qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
+      qc.invalidateQueries({ queryKey: ["gallery-events"] });
+      qc.invalidateQueries({ queryKey: ["gallery-event-images"] });
       toast({ title: `${files.length} image(s) added` });
-      setShowForm(false); setCaption("");
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
-    } finally { setUploading(false); }
+    } finally { setUploadingImages(false); }
   };
 
-  const handleDelete = async (id: string) => { await supabase.from("gallery").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-gallery"] }); qc.invalidateQueries({ queryKey: ["gallery"] }); toast({ title: "Deleted" }); };
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      await supabase.from("gallery_event_images").delete().eq("id", imageId);
+      qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
+      qc.invalidateQueries({ queryKey: ["gallery-event-images"] });
+      toast({ title: "Image removed" });
+    } catch { toast({ title: "Error", variant: "destructive" }); }
+  };
+
+  const startEdit = (ge: any) => {
+    setForm({ title: ge.title, description: ge.description || "", cover_image: ge.cover_image || "" });
+    setEditing(ge);
+    setShowForm(true);
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="font-display text-xl font-bold">Gallery ({items.length})</h2>
-        <Button onClick={() => setShowForm(true)}><Plus className="h-4 w-4 mr-2" /> Add Images</Button>
+        <h2 className="font-display text-xl font-bold">Gallery ({galleryEvents.length})</h2>
+        <Button onClick={() => { resetForm(); setShowForm(true); }}><Plus className="h-4 w-4 mr-2" /> Create Gallery</Button>
       </div>
       {showForm && (
         <div className="rounded-xl border border-border p-6 mb-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div><label className="text-sm font-medium block mb-1">Category</label>
-              <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={category} onChange={(e) => setCategory(e.target.value)}>
-                <option>Events</option><option>Workshops</option><option>Competitions</option><option>general</option>
-              </select>
-            </div>
-            <div><label className="text-sm font-medium block mb-1">Caption (optional)</label><Input value={caption} onChange={(e) => setCaption(e.target.value)} /></div>
-          </div>
-          <div>
-            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={handleFiles} />
-            <Button variant="outline" disabled={uploading} onClick={() => fileRef.current?.click()}>
-              {uploading ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...</> : <><Upload className="h-4 w-4 mr-2" /> Select Images (multiple)</>}
-            </Button>
-          </div>
-          <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
+          <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+          <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
+          <ImageUpload bucket="gallery-images" value={form.cover_image} onChange={(url) => setForm({ ...form, cover_image: url })} label="Cover Image" />
+          <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {items.map((item: any) => (
-            <div key={item.id} className="relative group rounded-lg border border-border overflow-hidden aspect-square">
-              <img src={item.image_url} alt={item.caption || ""} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Button size="icon" variant="destructive" onClick={() => handleDelete(item.id)}><Trash2 className="h-4 w-4" /></Button>
+        <div className="space-y-4">
+          {galleryEvents.map((ge: any) => (
+            <div key={ge.id} className="rounded-xl border border-border p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  {ge.cover_image && <img src={ge.cover_image} alt="" className="h-12 w-12 rounded object-cover" />}
+                  <div>
+                    <h3 className="font-medium">{ge.title}</h3>
+                    <p className="text-xs text-muted-foreground">{ge.gallery_event_images?.length || 0} photos</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="icon" variant="ghost" onClick={() => startEdit(ge)}><Edit2 className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => handleDelete(ge.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                </div>
               </div>
-              {item.caption && <p className="absolute bottom-0 left-0 right-0 bg-background/80 text-xs p-2 truncate">{item.caption}</p>}
+              {/* Images grid */}
+              <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mb-3">
+                {ge.gallery_event_images?.map((img: any) => (
+                  <div key={img.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
+                    <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button size="icon" variant="destructive" className="h-6 w-6" onClick={() => handleDeleteImage(img.id)}><Trash2 className="h-3 w-3" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" ref={multiFileRef} onChange={(e) => handleAddImages(ge.id, e)} />
+                <Button variant="outline" size="sm" disabled={uploadingImages} onClick={() => multiFileRef.current?.click()}>
+                  {uploadingImages ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><Upload className="h-3 w-3 mr-1" /> Add Photos</>}
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -373,14 +439,14 @@ const TeamAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "" });
+  const [form, setForm] = useState({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "" });
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["admin-team"],
     queryFn: async () => { const { data, error } = await supabase.from("team_members").select("*").order("created_at"); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "" }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "" }); setEditing(null); setShowForm(false); };
 
   const handleSectionChange = (section: string) => {
     const roles = SECTION_ROLES[section] || [];
@@ -389,9 +455,10 @@ const TeamAdmin = () => {
 
   const handleSave = async () => {
     if (!form.name || !form.role) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
+    if (form.linkedin_url && !form.linkedin_url.startsWith("http")) { toast({ title: "LinkedIn URL must start with http", variant: "destructive" }); return; }
     const dept = form.section === "Core" ? roleToDepartment(form.role) : (form.section === "Execom" ? roleToDepartment(form.role) : null);
     try {
-      const payload = { name: form.name, role: form.role, section: form.section, image_url: form.image_url || null, department: dept };
+      const payload: any = { name: form.name, role: form.role, section: form.section, image_url: form.image_url || null, department: dept, linkedin_url: form.linkedin_url || null };
       if (editing) { const { error } = await supabase.from("team_members").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("team_members").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] });
@@ -401,7 +468,7 @@ const TeamAdmin = () => {
 
   const handleDelete = async (id: string) => { await supabase.from("team_members").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] }); toast({ title: "Deleted" }); };
 
-  const startEdit = (m: any) => { setForm({ name: m.name, section: m.section, role: m.role, image_url: m.image_url || "", department: m.department || "" }); setEditing(m); setShowForm(true); };
+  const startEdit = (m: any) => { setForm({ name: m.name, section: m.section, role: m.role, image_url: m.image_url || "", department: m.department || "", linkedin_url: (m as any).linkedin_url || "" }); setEditing(m); setShowForm(true); };
 
   const roles = SECTION_ROLES[form.section] || [];
 
@@ -427,6 +494,7 @@ const TeamAdmin = () => {
             </div>
           </div>
           <ImageUpload bucket="team-images" value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} label="Member Photo" />
+          <div><label className="text-sm font-medium block mb-1">LinkedIn Profile URL (optional)</label><Input placeholder="https://linkedin.com/in/..." value={form.linkedin_url} onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })} /></div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Add"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
@@ -445,7 +513,7 @@ const TeamAdmin = () => {
                         {m.image_url && <img src={m.image_url} alt="" className="h-10 w-10 rounded-full object-cover" />}
                         <div>
                           <h4 className="font-medium text-sm">{m.name}</h4>
-                          <p className="text-xs text-muted-foreground">{m.role}{m.department ? ` · ${m.department}` : ""}</p>
+                          <p className="text-xs text-muted-foreground">{m.role}{m.department ? ` · ${m.department}` : ""}{m.linkedin_url ? " · 🔗" : ""}</p>
                         </div>
                       </div>
                       <div className="flex gap-1">
@@ -458,6 +526,119 @@ const TeamAdmin = () => {
               </div>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ---- Popup Admin ----
+const PopupAdmin = () => {
+  const { toast } = useToast();
+  const qc = useQueryClient();
+  const [form, setForm] = useState({ title: "", description: "", image_url: "", cta_text: "", cta_link: "", is_active: false });
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const { data: popups = [], isLoading } = useQuery({
+    queryKey: ["admin-popups"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("popups").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const resetForm = () => { setForm({ title: "", description: "", image_url: "", cta_text: "", cta_link: "", is_active: false }); setEditingId(null); };
+
+  const handleSave = async () => {
+    if (!form.title) { toast({ title: "Title is required", variant: "destructive" }); return; }
+    try {
+      // If activating, deactivate all others first
+      if (form.is_active) {
+        await supabase.from("popups").update({ is_active: false }).neq("id", editingId || "");
+      }
+      const payload: any = { title: form.title, description: form.description || null, image_url: form.image_url || null, cta_text: form.cta_text || null, cta_link: form.cta_link || null, is_active: form.is_active };
+      if (editingId) {
+        const { error } = await supabase.from("popups").update(payload).eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("popups").insert(payload);
+        if (error) throw error;
+      }
+      qc.invalidateQueries({ queryKey: ["admin-popups"] });
+      qc.invalidateQueries({ queryKey: ["active-popup"] });
+      toast({ title: editingId ? "Popup updated" : "Popup created" });
+      resetForm();
+    } catch { toast({ title: "Error saving", variant: "destructive" }); }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from("popups").delete().eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-popups"] });
+      qc.invalidateQueries({ queryKey: ["active-popup"] });
+      toast({ title: "Popup deleted" });
+    } catch { toast({ title: "Error", variant: "destructive" }); }
+  };
+
+  const startEdit = (p: any) => {
+    setForm({ title: p.title, description: p.description || "", image_url: p.image_url || "", cta_text: p.cta_text || "", cta_link: p.cta_link || "", is_active: p.is_active });
+    setEditingId(p.id);
+  };
+
+  const toggleActive = async (id: string, active: boolean) => {
+    try {
+      if (active) {
+        await supabase.from("popups").update({ is_active: false }).neq("id", id);
+      }
+      await supabase.from("popups").update({ is_active: active }).eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-popups"] });
+      qc.invalidateQueries({ queryKey: ["active-popup"] });
+      toast({ title: active ? "Popup activated" : "Popup deactivated" });
+    } catch { toast({ title: "Error", variant: "destructive" }); }
+  };
+
+  return (
+    <div>
+      <h2 className="font-display text-xl font-bold mb-4">Popup Manager</h2>
+      <div className="rounded-xl border border-border p-6 mb-6 space-y-4">
+        <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+        <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
+        <ImageUpload bucket="popup-images" value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} label="Popup Image" />
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="text-sm font-medium block mb-1">CTA Button Text</label><Input placeholder="Learn More" value={form.cta_text} onChange={(e) => setForm({ ...form, cta_text: e.target.value })} /></div>
+          <div><label className="text-sm font-medium block mb-1">CTA Button Link</label><Input placeholder="https://..." value={form.cta_link} onChange={(e) => setForm({ ...form, cta_link: e.target.value })} /></div>
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" id="popup-active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="rounded" />
+          <label htmlFor="popup-active" className="text-sm font-medium">Active (show on website)</label>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={handleSave}>{editingId ? "Update" : "Create"}</Button>
+          {editingId && <Button variant="outline" onClick={resetForm}>Cancel</Button>}
+        </div>
+      </div>
+
+      {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
+        <div className="space-y-2">
+          {popups.map((p: any) => (
+            <div key={p.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
+              <div className="flex items-center gap-3">
+                {p.image_url && <img src={p.image_url} alt="" className="h-10 w-10 rounded object-cover" />}
+                <div>
+                  <h3 className="font-medium">{p.title}</h3>
+                  <p className="text-xs text-muted-foreground">{p.is_active ? "🟢 Active" : "⚪ Inactive"}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant={p.is_active ? "outline" : "default"} onClick={() => toggleActive(p.id, !p.is_active)}>
+                  {p.is_active ? "Deactivate" : "Activate"}
+                </Button>
+                <Button size="icon" variant="ghost" onClick={() => startEdit(p)}><Edit2 className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
