@@ -1,16 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Loader2, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const tabs = ["All Events", "Upcoming", "Past"];
 
-const EventCard = ({ event, i }: { event: any; i: number }) => {
-  const [expanded, setExpanded] = useState(false);
+const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => {
+  const upcoming = event.status === "upcoming";
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handleEsc);
+    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", handleEsc); };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
+      <motion.div
+        className="relative z-10 w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", duration: 0.4 }}
+      >
+        <button onClick={onClose} className="absolute top-3 right-3 z-20 rounded-full bg-background/80 p-2 text-foreground hover:bg-background transition-colors">
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="relative h-56 sm:h-72 bg-secondary flex-shrink-0">
+          {event.image ? (
+            <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground">No Image</div>
+          )}
+          <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-bold font-display">
+            {format(new Date(event.date), "MMM dd, yyyy")}
+          </div>
+          {!upcoming && (
+            <div className="absolute bottom-3 left-3">
+              <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1" /> Concluded</Badge>
+            </div>
+          )}
+        </div>
+
+        <ScrollArea className="flex-1 p-6">
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">{event.category}</span>
+          <h2 className="font-display font-bold text-2xl mt-1 mb-4">{event.title}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{event.description}</p>
+
+          {upcoming && event.registration_link && (
+            <Button className="mt-6" asChild>
+              <a href={event.registration_link} target="_blank" rel="noopener noreferrer">
+                Register Now <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          )}
+        </ScrollArea>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const EventCard = ({ event, i, onSelect }: { event: any; i: number; onSelect: () => void }) => {
   const upcoming = event.status === "upcoming";
 
   return (
@@ -19,7 +82,7 @@ const EventCard = ({ event, i }: { event: any; i: number }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.05, duration: 0.4 }}
-      onClick={() => setExpanded(!expanded)}
+      onClick={onSelect}
     >
       <div className="relative h-48 bg-secondary flex items-center justify-center">
         {event.image && (
@@ -39,37 +102,7 @@ const EventCard = ({ event, i }: { event: any; i: number }) => {
       <div className="p-5">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary">{event.category}</span>
         <h3 className="font-display font-semibold text-lg mt-1 mb-2">{event.title}</h3>
-        <p className={`text-sm text-muted-foreground mb-4 leading-relaxed ${expanded ? "" : "line-clamp-3"}`}>{event.description}</p>
-
-        <AnimatePresence>
-          {expanded && event.description && event.description.length > 150 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-          )}
-        </AnimatePresence>
-
-        <div className="flex items-center justify-between">
-          {upcoming ? (
-            event.registration_link ? (
-              <Button size="sm" asChild onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-                <a href={event.registration_link} target="_blank" rel="noopener noreferrer">
-                  Register Now <ArrowRight className="ml-2 h-3 w-3" />
-                </a>
-              </Button>
-            ) : <span />
-          ) : (
-            <Badge variant="outline" className="py-2 text-muted-foreground">
-              <CheckCircle className="h-3 w-3 mr-1" /> Event Concluded
-            </Badge>
-          )}
-          <button className="text-muted-foreground hover:text-foreground transition-colors p-1" onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}>
-            {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-        </div>
+        <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-3">{event.description}</p>
       </div>
     </motion.div>
   );
@@ -77,6 +110,7 @@ const EventCard = ({ event, i }: { event: any; i: number }) => {
 
 const Events = () => {
   const [activeTab, setActiveTab] = useState("All Events");
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["events"],
@@ -153,7 +187,7 @@ const Events = () => {
                     <div className="w-16 h-0.5 bg-primary mb-8" />
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {externalEvents.map((event: any, i: number) => (
-                        <EventCard key={event.id} event={event} i={i} />
+                        <EventCard key={event.id} event={event} i={i} onSelect={() => setSelectedEvent(event)} />
                       ))}
                     </div>
                   </div>
@@ -164,7 +198,7 @@ const Events = () => {
                     <div className="w-16 h-0.5 bg-primary mb-8" />
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {internalEvents.map((event: any, i: number) => (
-                        <EventCard key={event.id} event={event} i={i} />
+                        <EventCard key={event.id} event={event} i={i} onSelect={() => setSelectedEvent(event)} />
                       ))}
                     </div>
                   </div>
@@ -172,6 +206,10 @@ const Events = () => {
               </motion.div>
             </AnimatePresence>
           )}
+
+          <AnimatePresence>
+            {selectedEvent && <EventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />}
+          </AnimatePresence>
         </div>
       </section>
     </div>
