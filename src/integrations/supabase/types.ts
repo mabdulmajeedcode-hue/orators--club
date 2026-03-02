@@ -116,6 +116,7 @@ export type Database = {
           created_at: string
           gallery_event_id: string
           id: string
+          image_order: number
           image_url: string
         }
         Insert: {
@@ -123,6 +124,7 @@ export type Database = {
           created_at?: string
           gallery_event_id: string
           id?: string
+          image_order?: number
           image_url: string
         }
         Update: {
@@ -130,6 +132,7 @@ export type Database = {
           created_at?: string
           gallery_event_id?: string
           id?: string
+          image_order?: number
           image_url?: string
         }
         Relationships: [
@@ -147,6 +150,7 @@ export type Database = {
           cover_image: string | null
           created_at: string
           description: string | null
+          display_order: number
           id: string
           title: string
         }
@@ -154,6 +158,7 @@ export type Database = {
           cover_image?: string | null
           created_at?: string
           description?: string | null
+          display_order?: number
           id?: string
           title: string
         }
@@ -161,6 +166,7 @@ export type Database = {
           cover_image?: string | null
           created_at?: string
           description?: string | null
+          display_order?: number
           id?: string
           title?: string
         }
@@ -224,6 +230,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          display_order: number
           embed_url: string | null
           id: string
           image: string | null
@@ -233,6 +240,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          display_order?: number
           embed_url?: string | null
           id?: string
           image?: string | null
@@ -242,6 +250,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          display_order?: number
           embed_url?: string | null
           id?: string
           image?: string | null

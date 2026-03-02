@@ -29,6 +29,7 @@ const GalleryDetail = () => {
         .from("gallery_event_images")
         .select("*")
         .eq("gallery_event_id", id!)
+        .order("image_order", { ascending: true })
         .order("created_at");
       if (error) throw error;
       return data;
