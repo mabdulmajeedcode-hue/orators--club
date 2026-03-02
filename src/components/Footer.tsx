@@ -69,13 +69,13 @@ const Footer = () => {
         <div className="border-t border-border mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">© 2026 MJCET Department of English. All rights reserved.</p>
           <div className="flex gap-6 text-xs text-muted-foreground">
-            <span className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</span>
+            <span className="hover:text-primary transition-colors cursor-pointer">
+            </span>
             <span className="hover:text-primary transition-colors cursor-pointer">Terms of Service</span>
           </div>
         </div>
       </div>
     </footer>);
-
 };
 
 export default Footer;
