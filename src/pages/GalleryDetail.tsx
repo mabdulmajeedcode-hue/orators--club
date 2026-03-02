@@ -64,18 +64,18 @@ const GalleryDetail = () => {
               {images.length === 0 ? (
                 <p className="text-center text-muted-foreground py-12">No images in this gallery yet.</p>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
                   {images.map((img: any, i: number) => (
                     <motion.div
                       key={img.id}
-                      className="group relative aspect-square rounded-xl overflow-hidden bg-secondary border border-border"
+                      className="group relative rounded-xl overflow-hidden bg-secondary border border-border break-inside-avoid"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.04 }}
                     >
-                      <img src={img.image_url} alt={img.caption || ""} className="w-full h-full object-cover" />
+                      <img src={img.image_url} alt={img.caption || ""} className="w-full h-auto object-contain" />
                       {img.caption && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4">
                           <p className="text-sm font-medium">{img.caption}</p>
                         </div>
                       )}

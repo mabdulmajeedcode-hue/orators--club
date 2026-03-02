@@ -35,7 +35,7 @@ const PodcastModal = ({ ep, onClose }: { ep: any; onClose: () => void }) => {
     >
       <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
       <motion.div
-        className="relative z-10 w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col"
+        className="relative z-10 w-full max-w-5xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -45,29 +45,37 @@ const PodcastModal = ({ ep, onClose }: { ep: any; onClose: () => void }) => {
           <X className="h-5 w-5" />
         </button>
 
-        {embedUrl ? (
-          <div className="w-full aspect-video flex-shrink-0">
-            <iframe src={embedUrl} title={ep.title} className="w-full h-full" allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+        <div className="flex flex-col md:flex-row flex-1 min-h-0">
+          {/* Video / Image area */}
+          <div className="md:flex-1 flex-shrink-0">
+            {embedUrl ? (
+              <div className="w-full aspect-video">
+                <iframe src={embedUrl} title={ep.title} className="w-full h-full" allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+              </div>
+            ) : ep.image ? (
+              <div className="h-56 sm:h-72 md:h-full">
+                <img src={ep.image} alt={ep.title} className="w-full h-full object-cover" />
+              </div>
+            ) : null}
           </div>
-        ) : ep.image ? (
-          <div className="h-56 sm:h-72 flex-shrink-0">
-            <img src={ep.image} alt={ep.title} className="w-full h-full object-cover" />
-          </div>
-        ) : null}
 
-        <ScrollArea className="flex-1 p-6">
-          <h2 className="font-display font-bold text-2xl mb-4">{ep.title}</h2>
-          {ep.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{ep.description}</p>
-          )}
-          {ep.embed_url && (
-            <Button className="mt-6" size="sm" asChild>
-              <a href={ep.embed_url} target="_blank" rel="noopener noreferrer">
-                <Play className="h-4 w-4 mr-2" /> Watch on YouTube <ExternalLink className="h-3 w-3 ml-2" />
-              </a>
-            </Button>
-          )}
-        </ScrollArea>
+          {/* Sidebar description */}
+          <div className="md:w-72 lg:w-80 border-t md:border-t-0 md:border-l border-border flex flex-col min-h-0">
+            <ScrollArea className="flex-1 p-5">
+              <h2 className="font-display font-bold text-xl mb-3">{ep.title}</h2>
+              {ep.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{ep.description}</p>
+              )}
+              {ep.embed_url && (
+                <Button className="mt-5" size="sm" asChild>
+                  <a href={ep.embed_url} target="_blank" rel="noopener noreferrer">
+                    <Play className="h-4 w-4 mr-2" /> Watch on YouTube <ExternalLink className="h-3 w-3 ml-2" />
+                  </a>
+                </Button>
+              )}
+            </ScrollArea>
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );
