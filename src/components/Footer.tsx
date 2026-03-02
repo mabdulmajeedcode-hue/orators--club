@@ -71,7 +71,8 @@ const Footer = () => {
           <div className="flex gap-6 text-xs text-muted-foreground">
             <span className="hover:text-primary transition-colors cursor-pointer">
             </span>
-            <span className="hover:text-primary transition-colors cursor-pointer">Terms of Service</span>
+            <span className="hover:text-primary transition-colors cursor-pointer">
+</span>
           </div>
         </div>
       </div>
