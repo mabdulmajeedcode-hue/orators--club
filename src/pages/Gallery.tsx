@@ -11,6 +11,7 @@ const Gallery = () => {
       const { data, error } = await supabase
         .from("gallery_events")
         .select("*, gallery_event_images(id)")
+        .order("display_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;

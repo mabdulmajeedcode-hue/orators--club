@@ -235,19 +235,19 @@ const PodcastsAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: "", description: "", embed_url: "", image: "", slug: "" });
+  const [form, setForm] = useState({ title: "", description: "", embed_url: "", image: "", slug: "", display_order: 0 });
 
   const { data: podcasts = [], isLoading } = useQuery({
     queryKey: ["admin-podcasts"],
-    queryFn: async () => { const { data, error } = await supabase.from("podcasts").select("*").order("created_at", { ascending: false }); if (error) throw error; return data; },
+    queryFn: async () => { const { data, error } = await supabase.from("podcasts").select("*").order("display_order", { ascending: true }).order("created_at", { ascending: false }); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ title: "", description: "", embed_url: "", image: "", slug: "" }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: "", description: "", embed_url: "", image: "", slug: "", display_order: 0 }); setEditing(null); setShowForm(false); };
 
   const handleSave = async () => {
     if (!form.title || !form.slug) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
     try {
-      const payload = { title: form.title, description: form.description || null, embed_url: form.embed_url || null, image: form.image || null, slug: form.slug };
+      const payload = { title: form.title, description: form.description || null, embed_url: form.embed_url || null, image: form.image || null, slug: form.slug, display_order: form.display_order };
       if (editing) { const { error } = await supabase.from("podcasts").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("podcasts").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-podcasts"] }); qc.invalidateQueries({ queryKey: ["podcasts"] });
@@ -256,7 +256,20 @@ const PodcastsAdmin = () => {
   };
 
   const handleDelete = async (id: string) => { await supabase.from("podcasts").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-podcasts"] }); qc.invalidateQueries({ queryKey: ["podcasts"] }); toast({ title: "Deleted" }); };
-  const startEdit = (p: any) => { setForm({ title: p.title, description: p.description || "", embed_url: p.embed_url || "", image: p.image || "", slug: p.slug }); setEditing(p); setShowForm(true); };
+  const startEdit = (p: any) => { setForm({ title: p.title, description: p.description || "", embed_url: p.embed_url || "", image: p.image || "", slug: p.slug, display_order: p.display_order || 0 }); setEditing(p); setShowForm(true); };
+
+  const movePodcast = async (id: string, direction: "up" | "down") => {
+    const idx = podcasts.findIndex((p: any) => p.id === id);
+    if (idx < 0) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= podcasts.length) return;
+    const a = podcasts[idx] as any;
+    const b = podcasts[swapIdx] as any;
+    await supabase.from("podcasts").update({ display_order: b.display_order ?? swapIdx }).eq("id", a.id);
+    await supabase.from("podcasts").update({ display_order: a.display_order ?? idx }).eq("id", b.id);
+    qc.invalidateQueries({ queryKey: ["admin-podcasts"] });
+    qc.invalidateQueries({ queryKey: ["podcasts"] });
+  };
 
   return (
     <div>
@@ -270,7 +283,10 @@ const PodcastsAdmin = () => {
             <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
             <div><label className="text-sm font-medium block mb-1">Slug *</label><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} /></div>
           </div>
-          <div><label className="text-sm font-medium block mb-1">YouTube URL</label><Input value={form.embed_url} onChange={(e) => setForm({ ...form, embed_url: e.target.value })} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="text-sm font-medium block mb-1">YouTube URL</label><Input value={form.embed_url} onChange={(e) => setForm({ ...form, embed_url: e.target.value })} /></div>
+            <div><label className="text-sm font-medium block mb-1">Display Order</label><Input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} /></div>
+          </div>
           <ImageUpload bucket="podcast-images" value={form.image} onChange={(url) => setForm({ ...form, image: url })} label="Podcast Thumbnail" />
           <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
@@ -278,9 +294,13 @@ const PodcastsAdmin = () => {
       )}
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
         <div className="space-y-2">
-          {podcasts.map((p: any) => (
+          {podcasts.map((p: any, idx: number) => (
             <div key={p.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
               <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-0.5">
+                  <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0} onClick={() => movePodcast(p.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === podcasts.length - 1} onClick={() => movePodcast(p.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
+                </div>
                 {p.image && <img src={p.image} alt="" className="h-10 w-10 rounded object-cover" />}
                 <div><h3 className="font-medium">{p.title}</h3><p className="text-xs text-muted-foreground">{p.slug}</p></div>
               </div>
@@ -309,9 +329,13 @@ const GalleryEventsAdmin = () => {
   const { data: galleryEvents = [], isLoading } = useQuery({
     queryKey: ["admin-gallery-events"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("gallery_events").select("*, gallery_event_images(id, image_url, caption)").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("gallery_events").select("*, gallery_event_images(id, image_url, caption, image_order)").order("display_order", { ascending: true }).order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      // Sort images within each event by image_order
+      return (data || []).map((ge: any) => ({
+        ...ge,
+        gallery_event_images: (ge.gallery_event_images || []).sort((a: any, b: any) => (a.image_order ?? 0) - (b.image_order ?? 0)),
+      }));
     },
   });
 
@@ -377,6 +401,35 @@ const GalleryEventsAdmin = () => {
     setShowForm(true);
   };
 
+  const moveGalleryEvent = async (id: string, direction: "up" | "down") => {
+    const idx = galleryEvents.findIndex((ge: any) => ge.id === id);
+    if (idx < 0) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= galleryEvents.length) return;
+    const a = galleryEvents[idx] as any;
+    const b = galleryEvents[swapIdx] as any;
+    await supabase.from("gallery_events").update({ display_order: b.display_order ?? swapIdx }).eq("id", a.id);
+    await supabase.from("gallery_events").update({ display_order: a.display_order ?? idx }).eq("id", b.id);
+    qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
+    qc.invalidateQueries({ queryKey: ["gallery-events"] });
+  };
+
+  const moveImage = async (galleryEventId: string, imageId: string, direction: "up" | "down") => {
+    const ge = galleryEvents.find((g: any) => g.id === galleryEventId) as any;
+    if (!ge) return;
+    const imgs = ge.gallery_event_images || [];
+    const idx = imgs.findIndex((img: any) => img.id === imageId);
+    if (idx < 0) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= imgs.length) return;
+    const a = imgs[idx];
+    const b = imgs[swapIdx];
+    await supabase.from("gallery_event_images").update({ image_order: b.image_order ?? swapIdx }).eq("id", a.id);
+    await supabase.from("gallery_event_images").update({ image_order: a.image_order ?? idx }).eq("id", b.id);
+    qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
+    qc.invalidateQueries({ queryKey: ["gallery-event-images"] });
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -393,10 +446,14 @@ const GalleryEventsAdmin = () => {
       )}
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
         <div className="space-y-4">
-          {galleryEvents.map((ge: any) => (
+          {galleryEvents.map((ge: any, geIdx: number) => (
             <div key={ge.id} className="rounded-xl border border-border p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-0.5">
+                    <Button size="icon" variant="ghost" className="h-6 w-6" disabled={geIdx === 0} onClick={() => moveGalleryEvent(ge.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
+                    <Button size="icon" variant="ghost" className="h-6 w-6" disabled={geIdx === galleryEvents.length - 1} onClick={() => moveGalleryEvent(ge.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
+                  </div>
                   {ge.cover_image && <img src={ge.cover_image} alt="" className="h-12 w-12 rounded object-cover" />}
                   <div>
                     <h3 className="font-medium">{ge.title}</h3>
@@ -410,10 +467,12 @@ const GalleryEventsAdmin = () => {
               </div>
               {/* Images grid */}
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mb-3">
-                {ge.gallery_event_images?.map((img: any) => (
+                {ge.gallery_event_images?.map((img: any, imgIdx: number) => (
                   <div key={img.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
                     <img src={img.image_url} alt="" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                      <Button size="icon" variant="ghost" className="h-6 w-6" disabled={imgIdx === 0} onClick={() => moveImage(ge.id, img.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
+                      <Button size="icon" variant="ghost" className="h-6 w-6" disabled={imgIdx === (ge.gallery_event_images?.length || 1) - 1} onClick={() => moveImage(ge.id, img.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
                       <Button size="icon" variant="destructive" className="h-6 w-6" onClick={() => handleDeleteImage(img.id)}><Trash2 className="h-3 w-3" /></Button>
                     </div>
                   </div>
