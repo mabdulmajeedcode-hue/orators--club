@@ -198,7 +198,7 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
             <Button size="lg" variant="secondary" asChild>
               <Link to="/join">Apply for Membership</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" asChild>
+            <Button size="lg" variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/10" asChild>
               <Link to="/contact">Contact Us</Link>
             </Button>
           </div>
