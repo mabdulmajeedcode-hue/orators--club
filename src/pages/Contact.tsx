@@ -126,7 +126,7 @@ const Contact = () => {
 
               <div className="rounded-xl overflow-hidden border border-border h-64">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.5!2d78.4340!3d17.4140!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb97!2sMount%20Pleasant%2C%208-2-249%2C%20Rd%20Number%203%2C%20Venkateshwara%20Hills%2C%20Banjara%20Hills%2C%20Hyderabad%2C%20Telangana%20500082!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.5!2d78.43767!3d17.41536!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb973ff79e5c5b%3A0x4a96c5e4f8a3e8d0!2sMount%20Pleasant%2C%208-2-249%2C%20Rd%20Number%203%2C%20Venkateshwara%20Hills%2C%20Banjara%20Hills%2C%20Hyderabad%2C%20Telangana%20500082!5e0!3m2!1sen!2sin!4v1700000000001!5m2!1sen!2sin"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
