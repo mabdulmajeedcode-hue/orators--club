@@ -102,9 +102,10 @@ const Contact = () => {
                   <MapPin className="h-5 w-5 text-primary mb-3" />
                   <h3 className="font-display font-semibold mb-2">Visit Us</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Muffakham Jah College of Engineering & Technology<br />
-                    Road No. 3, Banjara Hills<br />
-                    Hyderabad - 500034
+                    Mount Pleasant, 8-2-249<br />
+                    Road No. 3, Venkateshwara Hills<br />
+                    Banjara Hills, Hyderabad<br />
+                    Telangana - 500082
                   </p>
                 </div>
                 <div className="rounded-xl border border-border p-6">
