@@ -117,7 +117,7 @@ const Team = () => {
   const { data: members = [] } = useQuery({
     queryKey: ["team-members"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("team_members").select("*").order("created_at");
+      const { data, error } = await supabase.from("team_members").select("*").order("display_order", { ascending: true }).order("created_at");
       if (error) throw error;
       return data;
     },
