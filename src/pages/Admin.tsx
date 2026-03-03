@@ -12,7 +12,7 @@ import { uploadImage } from "@/lib/upload";
 const ADMIN_PASSWORD = "orators2025";
 
 const SECTION_ROLES: Record<string, string[]> = {
-  "Governing Body": ["Chief Coordinator", "Chief Representative", "Chief Strategist"],
+  "Governing Body": ["Chief Coordinator", "Chief Representative", "Chief Strategist", "General Secretary"],
   Execom: ["PR Execom", "HR Execom", "Operations Execom", "Media & Editing Execom", "Technical Execom", "Research Execom", "Documentation Execom", "Marketing Execom"],
   Core: ["PR Core", "HR Core", "Operations Core", "Media & Editing Core", "Technical Core", "Research Core", "Documentation Core", "Marketing Core"],
 };
@@ -498,14 +498,14 @@ const TeamAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "" });
+  const [form, setForm] = useState({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "", display_order: 0 });
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["admin-team"],
-    queryFn: async () => { const { data, error } = await supabase.from("team_members").select("*").order("created_at"); if (error) throw error; return data; },
+    queryFn: async () => { const { data, error } = await supabase.from("team_members").select("*").order("display_order", { ascending: true }).order("created_at"); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "" }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "", display_order: 0 }); setEditing(null); setShowForm(false); };
 
   const handleSectionChange = (section: string) => {
     const roles = SECTION_ROLES[section] || [];
@@ -517,7 +517,7 @@ const TeamAdmin = () => {
     if (form.linkedin_url && !form.linkedin_url.startsWith("http")) { toast({ title: "LinkedIn URL must start with http", variant: "destructive" }); return; }
     const dept = form.section === "Core" ? roleToDepartment(form.role) : (form.section === "Execom" ? roleToDepartment(form.role) : null);
     try {
-      const payload: any = { name: form.name, role: form.role, section: form.section, image_url: form.image_url || null, department: dept, linkedin_url: form.linkedin_url || null };
+      const payload: any = { name: form.name, role: form.role, section: form.section, image_url: form.image_url || null, department: dept, linkedin_url: form.linkedin_url || null, display_order: form.display_order };
       if (editing) { const { error } = await supabase.from("team_members").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("team_members").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] });
@@ -527,7 +527,21 @@ const TeamAdmin = () => {
 
   const handleDelete = async (id: string) => { await supabase.from("team_members").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] }); toast({ title: "Deleted" }); };
 
-  const startEdit = (m: any) => { setForm({ name: m.name, section: m.section, role: m.role, image_url: m.image_url || "", department: m.department || "", linkedin_url: (m as any).linkedin_url || "" }); setEditing(m); setShowForm(true); };
+  const startEdit = (m: any) => { setForm({ name: m.name, section: m.section, role: m.role, image_url: m.image_url || "", department: m.department || "", linkedin_url: (m as any).linkedin_url || "", display_order: m.display_order || 0 }); setEditing(m); setShowForm(true); };
+
+  const moveGovMember = async (id: string, direction: "up" | "down") => {
+    const govMembers = members.filter((m: any) => m.section === "Governing Body");
+    const idx = govMembers.findIndex((m: any) => m.id === id);
+    if (idx < 0) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= govMembers.length) return;
+    const a = govMembers[idx] as any;
+    const b = govMembers[swapIdx] as any;
+    await supabase.from("team_members").update({ display_order: b.display_order ?? swapIdx } as any).eq("id", a.id);
+    await supabase.from("team_members").update({ display_order: a.display_order ?? idx } as any).eq("id", b.id);
+    qc.invalidateQueries({ queryKey: ["admin-team"] });
+    qc.invalidateQueries({ queryKey: ["team-members"] });
+  };
 
   const roles = SECTION_ROLES[form.section] || [];
 
@@ -559,16 +573,22 @@ const TeamAdmin = () => {
       )}
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
         <div className="space-y-2">
-          {["Governing Body", "Execom", "Core"].map((section) => {
+           {["Governing Body", "Execom", "Core"].map((section) => {
             const sectionMembers = members.filter((m: any) => m.section === section);
             if (sectionMembers.length === 0) return null;
             return (
               <div key={section} className="mb-6">
                 <h3 className="font-display font-semibold text-lg mb-3 text-primary">{section}</h3>
                 <div className="space-y-2">
-                  {sectionMembers.map((m: any) => (
+                  {sectionMembers.map((m: any, mIdx: number) => (
                     <div key={m.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
+                        {section === "Governing Body" && (
+                          <div className="flex flex-col gap-0.5">
+                            <Button size="icon" variant="ghost" className="h-6 w-6" disabled={mIdx === 0} onClick={() => moveGovMember(m.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
+                            <Button size="icon" variant="ghost" className="h-6 w-6" disabled={mIdx === sectionMembers.length - 1} onClick={() => moveGovMember(m.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
+                          </div>
+                        )}
                         {m.image_url && <img src={m.image_url} alt="" className="h-10 w-10 rounded-full object-cover" />}
                         <div>
                           <h4 className="font-medium text-sm">{m.name}</h4>
