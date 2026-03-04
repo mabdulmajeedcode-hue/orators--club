@@ -117,17 +117,23 @@ const Contact = () => {
               </div>
 
               <div className="flex gap-3">
-                {[Facebook, Instagram, Linkedin].map((Icon, i) => (
-                  <a key={i} href="#" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-                    <Icon className="h-4 w-4" />
-                    {["Facebook", "Instagram", "LinkedIn"][i]}
-                  </a>
-                ))}
+                <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                  <Facebook className="h-4 w-4" />
+                  Facebook
+                </a>
+                <a href="https://www.instagram.com/oratorsclubmjcet?igsh=cGtnYzFjamlteDY2" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                  <Instagram className="h-4 w-4" />
+                  Instagram
+                </a>
+                <a href="https://www.linkedin.com/company/orators-club-mjcet/" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                  <Linkedin className="h-4 w-4" />
+                  LinkedIn
+                </a>
               </div>
 
               <div className="rounded-xl overflow-hidden border border-border h-64">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.9796498498!2d78.43486831487!3d17.41823198806!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c3%3A0xfc5d2cb3b9e1a9b2!2sMuffakham%20Jah%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1700000000003!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Muffakham+Jah+College+of+Engineering+and+Technology,Banjara+Hills,Hyderabad&zoom=15"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
