@@ -127,7 +127,7 @@ const Contact = () => {
 
               <div className="rounded-xl overflow-hidden border border-border h-64">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.5!2d78.4376!3d17.4154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99d382b1dddb%3A0x43d03c52498b4585!2sMuffakham%20Jah%20College%20of%20Engineering%20%26%20Technology%20(MJCET)!5e0!3m2!1sen!2sin!4v1700000000002!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.9796498498!2d78.43486831487!3d17.41823198806!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c3%3A0xfc5d2cb3b9e1a9b2!2sMuffakham%20Jah%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1700000000003!5m2!1sen!2sin"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
