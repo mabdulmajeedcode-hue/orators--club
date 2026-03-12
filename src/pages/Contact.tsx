@@ -117,10 +117,6 @@ const Contact = () => {
               </div>
 
               <div className="flex gap-3">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-                  <Facebook className="h-4 w-4" />
-                  Facebook
-                </a>
                 <a href="https://www.instagram.com/oratorsclubmjcet?igsh=cGtnYzFjamlteDY2" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                   <Instagram className="h-4 w-4" />
                   Instagram
