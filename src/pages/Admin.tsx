@@ -5,13 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Plus, Edit2, LogOut, Loader2, Upload, Image as ImageIcon, ArrowUp, ArrowDown } from "lucide-react";
+import { Trash2, Plus, Edit2, LogOut, Loader2, Upload, Image as ImageIcon, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { uploadImage } from "@/lib/upload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ADMIN_PASSWORD = "orators2025";
 
 const SECTION_ROLES: Record<string, string[]> = {
+  "Staff Coordinators": [],
   "Governing Body": ["Chief Coordinator", "Chief Representative", "Chief Strategist", "General Secretary"],
   Execom: ["PR Execom", "HR Execom", "Operations Execom", "Media & Editing Execom", "Technical Execom", "Research Execom", "Documentation Execom", "Marketing Execom"],
   Core: ["PR Core", "HR Core", "Operations Core", "Media & Editing Core", "Technical Core", "Research Core", "Documentation Core", "Marketing Core"],
@@ -26,6 +38,49 @@ const roleToDepartment = (role: string): string | null => {
   if (role.includes("Media")) return "Media";
   return null;
 };
+
+// --- Shared reorder helper ---
+const normalizeAndPersist = async (
+  table: string,
+  items: any[],
+  idx: number,
+  direction: "up" | "down",
+  orderField: string,
+  qc: any,
+  queryKeys: string[]
+) => {
+  const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+  if (swapIdx < 0 || swapIdx >= items.length) return;
+  const reordered = [...items];
+  [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
+  // Normalize to 1,2,3...
+  const updates = reordered.map((item, i) => ({ id: item.id, [orderField]: i + 1 }));
+  for (const u of updates) {
+    await (supabase.from(table as any) as any).update({ [orderField]: u[orderField] }).eq("id", u.id);
+  }
+  for (const key of queryKeys) {
+    qc.invalidateQueries({ queryKey: [key] });
+  }
+};
+
+// --- Delete confirmation wrapper ---
+const DeleteButton = ({ onConfirm, label = "this item" }: { onConfirm: () => void; label?: string }) => (
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button size="icon" variant="ghost"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" /> Confirm Deletion</AlertDialogTitle>
+        <AlertDialogDescription>Are you sure you want to delete {label}? This action cannot be undone.</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
 
 const Admin = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -91,6 +146,7 @@ const ImageUpload = ({ bucket, value, onChange, label = "Image" }: { bucket: str
     try {
       const url = await uploadImage(bucket, file);
       onChange(url);
+      toast({ title: "Image uploaded successfully" });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
     } finally {
@@ -136,31 +192,30 @@ const EventsAdmin = () => {
   const resetForm = () => { setForm({ title: "", description: "", date: "", category: "Workshops", image: "", slug: "", registration_link: "", status: "upcoming", display_order: 0, event_type: "external" }); setEditing(null); setShowForm(false); };
 
   const handleSave = async () => {
-    if (!form.title || !form.date || !form.slug) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
+    if (!form.title || !form.date || !form.slug) { toast({ title: "Fill required fields (Title, Date, Slug)", variant: "destructive" }); return; }
     try {
       const payload = { title: form.title, description: form.description, date: form.date, category: form.category, image: form.image || null, slug: form.slug, registration_link: form.registration_link || null, status: form.status, display_order: form.display_order, event_type: form.event_type };
       if (editing) { const { error } = await supabase.from("events").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("events").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] });
-      toast({ title: editing ? "Event updated" : "Event created" }); resetForm();
+      toast({ title: editing ? "Event updated successfully" : "Event created successfully" }); resetForm();
     } catch { toast({ title: "Error saving event", variant: "destructive" }); }
   };
 
-  const handleDelete = async (id: string) => { await supabase.from("events").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] }); toast({ title: "Event deleted" }); };
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from("events").delete().eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-events"] }); qc.invalidateQueries({ queryKey: ["events"] });
+      toast({ title: "Event deleted successfully" });
+    } catch { toast({ title: "Error deleting event", variant: "destructive" }); }
+  };
 
   const startEdit = (e: any) => { setForm({ title: e.title, description: e.description || "", date: e.date?.split("T")[0] || "", category: e.category, image: e.image || "", slug: e.slug, registration_link: e.registration_link || "", status: e.status || "upcoming", display_order: e.display_order || 0, event_type: e.event_type || "external" }); setEditing(e); setShowForm(true); };
 
   const moveEvent = async (id: string, direction: "up" | "down") => {
     const idx = events.findIndex((e: any) => e.id === id);
     if (idx < 0) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= events.length) return;
-    const a = events[idx] as any;
-    const b = events[swapIdx] as any;
-    await supabase.from("events").update({ display_order: b.display_order ?? swapIdx }).eq("id", a.id);
-    await supabase.from("events").update({ display_order: a.display_order ?? idx }).eq("id", b.id);
-    qc.invalidateQueries({ queryKey: ["admin-events"] });
-    qc.invalidateQueries({ queryKey: ["events"] });
+    await normalizeAndPersist("events", events, idx, direction, "display_order", qc, ["admin-events", "events"]);
   };
 
   return (
@@ -184,12 +239,12 @@ const EventsAdmin = () => {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div><label className="text-sm font-medium block mb-1">Status *</label>
+            <div><label className="text-sm font-medium block mb-1">Status</label>
               <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                 <option value="upcoming">Upcoming</option><option value="past">Past</option>
               </select>
             </div>
-            <div><label className="text-sm font-medium block mb-1">Event Type *</label>
+            <div><label className="text-sm font-medium block mb-1">Event Type</label>
               <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.event_type} onChange={(e) => setForm({ ...form, event_type: e.target.value })}>
                 <option value="external">External Event</option><option value="internal">Internal Event</option>
               </select>
@@ -197,7 +252,7 @@ const EventsAdmin = () => {
             <div><label className="text-sm font-medium block mb-1">Display Order</label><Input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} /></div>
           </div>
           <ImageUpload bucket="events-images" value={form.image} onChange={(url) => setForm({ ...form, image: url })} />
-          <div><label className="text-sm font-medium block mb-1">Google Form Registration Link</label><Input placeholder="https://forms.google.com/..." value={form.registration_link} onChange={(e) => setForm({ ...form, registration_link: e.target.value })} /></div>
+          <div><label className="text-sm font-medium block mb-1">Registration Link</label><Input placeholder="https://forms.google.com/..." value={form.registration_link} onChange={(e) => setForm({ ...form, registration_link: e.target.value })} /></div>
           <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
@@ -219,7 +274,7 @@ const EventsAdmin = () => {
               </div>
               <div className="flex gap-2">
                 <Button size="icon" variant="ghost" onClick={() => startEdit(e)}><Edit2 className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => handleDelete(e.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                <DeleteButton onConfirm={() => handleDelete(e.id)} label={`"${e.title}"`} />
               </div>
             </div>
           ))}
@@ -229,7 +284,7 @@ const EventsAdmin = () => {
   );
 };
 
-// ---- Podcasts Admin (with image upload) ----
+// ---- Podcasts Admin ----
 const PodcastsAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -245,30 +300,30 @@ const PodcastsAdmin = () => {
   const resetForm = () => { setForm({ title: "", description: "", embed_url: "", image: "", slug: "", display_order: 0 }); setEditing(null); setShowForm(false); };
 
   const handleSave = async () => {
-    if (!form.title || !form.slug) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
+    if (!form.title || !form.slug) { toast({ title: "Fill required fields (Title, Slug)", variant: "destructive" }); return; }
     try {
       const payload = { title: form.title, description: form.description || null, embed_url: form.embed_url || null, image: form.image || null, slug: form.slug, display_order: form.display_order };
       if (editing) { const { error } = await supabase.from("podcasts").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("podcasts").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-podcasts"] }); qc.invalidateQueries({ queryKey: ["podcasts"] });
-      toast({ title: editing ? "Updated" : "Created" }); resetForm();
-    } catch { toast({ title: "Error saving", variant: "destructive" }); }
+      toast({ title: editing ? "Podcast updated" : "Podcast created" }); resetForm();
+    } catch { toast({ title: "Error saving podcast", variant: "destructive" }); }
   };
 
-  const handleDelete = async (id: string) => { await supabase.from("podcasts").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-podcasts"] }); qc.invalidateQueries({ queryKey: ["podcasts"] }); toast({ title: "Deleted" }); };
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from("podcasts").delete().eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-podcasts"] }); qc.invalidateQueries({ queryKey: ["podcasts"] });
+      toast({ title: "Podcast deleted" });
+    } catch { toast({ title: "Error deleting", variant: "destructive" }); }
+  };
+
   const startEdit = (p: any) => { setForm({ title: p.title, description: p.description || "", embed_url: p.embed_url || "", image: p.image || "", slug: p.slug, display_order: p.display_order || 0 }); setEditing(p); setShowForm(true); };
 
   const movePodcast = async (id: string, direction: "up" | "down") => {
     const idx = podcasts.findIndex((p: any) => p.id === id);
     if (idx < 0) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= podcasts.length) return;
-    const a = podcasts[idx] as any;
-    const b = podcasts[swapIdx] as any;
-    await supabase.from("podcasts").update({ display_order: b.display_order ?? swapIdx }).eq("id", a.id);
-    await supabase.from("podcasts").update({ display_order: a.display_order ?? idx }).eq("id", b.id);
-    qc.invalidateQueries({ queryKey: ["admin-podcasts"] });
-    qc.invalidateQueries({ queryKey: ["podcasts"] });
+    await normalizeAndPersist("podcasts", podcasts, idx, direction, "display_order", qc, ["admin-podcasts", "podcasts"]);
   };
 
   return (
@@ -306,7 +361,7 @@ const PodcastsAdmin = () => {
               </div>
               <div className="flex gap-2">
                 <Button size="icon" variant="ghost" onClick={() => startEdit(p)}><Edit2 className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                <DeleteButton onConfirm={() => handleDelete(p.id)} label={`"${p.title}"`} />
               </div>
             </div>
           ))}
@@ -316,22 +371,20 @@ const PodcastsAdmin = () => {
   );
 };
 
-// ---- Gallery Events Admin ----
+// ---- Gallery Events Admin (Bug 2 fix: per-gallery upload with locked galleryId) ----
 const GalleryEventsAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ title: "", description: "", cover_image: "" });
-  const [uploadingImages, setUploadingImages] = useState(false);
-  const multiFileRef = useRef<HTMLInputElement>(null);
+  const [uploadingForGallery, setUploadingForGallery] = useState<string | null>(null);
 
   const { data: galleryEvents = [], isLoading } = useQuery({
     queryKey: ["admin-gallery-events"],
     queryFn: async () => {
       const { data, error } = await supabase.from("gallery_events").select("*, gallery_event_images(id, image_url, caption, image_order)").order("display_order", { ascending: true }).order("created_at", { ascending: false });
       if (error) throw error;
-      // Sort images within each event by image_order
       return (data || []).map((ge: any) => ({
         ...ge,
         gallery_event_images: (ge.gallery_event_images || []).sort((a: any, b: any) => (a.image_order ?? 0) - (b.image_order ?? 0)),
@@ -354,36 +407,44 @@ const GalleryEventsAdmin = () => {
       }
       qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
       qc.invalidateQueries({ queryKey: ["gallery-events"] });
-      toast({ title: editing ? "Updated" : "Gallery created" });
+      toast({ title: editing ? "Gallery updated" : "Gallery created" });
       resetForm();
-    } catch { toast({ title: "Error saving", variant: "destructive" }); }
+    } catch { toast({ title: "Error saving gallery", variant: "destructive" }); }
   };
 
   const handleDelete = async (id: string) => {
     try {
+      // Delete images first, then the gallery event
+      await supabase.from("gallery_event_images").delete().eq("gallery_event_id", id);
       await supabase.from("gallery_events").delete().eq("id", id);
       qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
       qc.invalidateQueries({ queryKey: ["gallery-events"] });
       toast({ title: "Gallery deleted" });
-    } catch { toast({ title: "Error deleting", variant: "destructive" }); }
+    } catch { toast({ title: "Error deleting gallery", variant: "destructive" }); }
   };
 
-  const handleAddImages = async (galleryEventId: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  // Bug 2 fix: galleryId is captured at call time, not via a shared ref
+  const handleAddImages = async (galleryEventId: string, files: FileList) => {
     if (!files || files.length === 0) return;
-    setUploadingImages(true);
+    setUploadingForGallery(galleryEventId);
     try {
+      // Get current max image_order for this gallery
+      const ge = galleryEvents.find((g: any) => g.id === galleryEventId) as any;
+      const existingImages = ge?.gallery_event_images || [];
+      let maxOrder = existingImages.reduce((max: number, img: any) => Math.max(max, img.image_order ?? 0), 0);
+
       for (const file of Array.from(files)) {
+        maxOrder++;
         const url = await uploadImage("gallery-images", file);
-        await supabase.from("gallery_event_images").insert({ gallery_event_id: galleryEventId, image_url: url });
+        await supabase.from("gallery_event_images").insert({ gallery_event_id: galleryEventId, image_url: url, image_order: maxOrder });
       }
       qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
       qc.invalidateQueries({ queryKey: ["gallery-events"] });
       qc.invalidateQueries({ queryKey: ["gallery-event-images"] });
-      toast({ title: `${files.length} image(s) added` });
+      toast({ title: `${files.length} image(s) added to gallery` });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
-    } finally { setUploadingImages(false); }
+    } finally { setUploadingForGallery(null); }
   };
 
   const handleDeleteImage = async (imageId: string) => {
@@ -392,7 +453,7 @@ const GalleryEventsAdmin = () => {
       qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
       qc.invalidateQueries({ queryKey: ["gallery-event-images"] });
       toast({ title: "Image removed" });
-    } catch { toast({ title: "Error", variant: "destructive" }); }
+    } catch { toast({ title: "Error removing image", variant: "destructive" }); }
   };
 
   const startEdit = (ge: any) => {
@@ -404,14 +465,7 @@ const GalleryEventsAdmin = () => {
   const moveGalleryEvent = async (id: string, direction: "up" | "down") => {
     const idx = galleryEvents.findIndex((ge: any) => ge.id === id);
     if (idx < 0) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= galleryEvents.length) return;
-    const a = galleryEvents[idx] as any;
-    const b = galleryEvents[swapIdx] as any;
-    await supabase.from("gallery_events").update({ display_order: b.display_order ?? swapIdx }).eq("id", a.id);
-    await supabase.from("gallery_events").update({ display_order: a.display_order ?? idx }).eq("id", b.id);
-    qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
-    qc.invalidateQueries({ queryKey: ["gallery-events"] });
+    await normalizeAndPersist("gallery_events", galleryEvents, idx, direction, "display_order", qc, ["admin-gallery-events", "gallery-events"]);
   };
 
   const moveImage = async (galleryEventId: string, imageId: string, direction: "up" | "down") => {
@@ -420,14 +474,7 @@ const GalleryEventsAdmin = () => {
     const imgs = ge.gallery_event_images || [];
     const idx = imgs.findIndex((img: any) => img.id === imageId);
     if (idx < 0) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= imgs.length) return;
-    const a = imgs[idx];
-    const b = imgs[swapIdx];
-    await supabase.from("gallery_event_images").update({ image_order: b.image_order ?? swapIdx }).eq("id", a.id);
-    await supabase.from("gallery_event_images").update({ image_order: a.image_order ?? idx }).eq("id", b.id);
-    qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
-    qc.invalidateQueries({ queryKey: ["gallery-event-images"] });
+    await normalizeAndPersist("gallery_event_images", imgs, idx, direction, "image_order", qc, ["admin-gallery-events", "gallery-event-images"]);
   };
 
   return (
@@ -462,7 +509,7 @@ const GalleryEventsAdmin = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button size="icon" variant="ghost" onClick={() => startEdit(ge)}><Edit2 className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => handleDelete(ge.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <DeleteButton onConfirm={() => handleDelete(ge.id)} label={`gallery "${ge.title}" and all its images`} />
                 </div>
               </div>
               {/* Images grid */}
@@ -473,16 +520,34 @@ const GalleryEventsAdmin = () => {
                     <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                       <Button size="icon" variant="ghost" className="h-6 w-6" disabled={imgIdx === 0} onClick={() => moveImage(ge.id, img.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
                       <Button size="icon" variant="ghost" className="h-6 w-6" disabled={imgIdx === (ge.gallery_event_images?.length || 1) - 1} onClick={() => moveImage(ge.id, img.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
-                      <Button size="icon" variant="destructive" className="h-6 w-6" onClick={() => handleDeleteImage(img.id)}><Trash2 className="h-3 w-3" /></Button>
+                      <DeleteButton onConfirm={() => handleDeleteImage(img.id)} label="this image" />
                     </div>
                   </div>
                 ))}
               </div>
-              <div>
-                <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" ref={multiFileRef} onChange={(e) => handleAddImages(ge.id, e)} />
-                <Button variant="outline" size="sm" disabled={uploadingImages} onClick={() => multiFileRef.current?.click()}>
-                  {uploadingImages ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><Upload className="h-3 w-3 mr-1" /> Add Photos</>}
+              {/* Bug 2 fix: each gallery has its own file input with locked galleryId via closure + unique id */}
+              <div className="flex items-center gap-3">
+                <input
+                  id={`gallery-upload-${ge.id}`}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files) handleAddImages(ge.id, files);
+                    e.target.value = ""; // reset so same file can be re-selected
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={uploadingForGallery === ge.id}
+                  onClick={() => document.getElementById(`gallery-upload-${ge.id}`)?.click()}
+                >
+                  {uploadingForGallery === ge.id ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><Upload className="h-3 w-3 mr-1" /> Add Photos</>}
                 </Button>
+                <span className="text-xs text-muted-foreground">→ Uploading to: <strong className="text-foreground">{ge.title}</strong></span>
               </div>
             </div>
           ))}
@@ -492,58 +557,65 @@ const GalleryEventsAdmin = () => {
   );
 };
 
-// ---- Team Admin ----
+// ---- Team Admin (with Staff Coordinators support) ----
 const TeamAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "", display_order: 0 });
+  const [form, setForm] = useState({ name: "", section: "Staff Coordinators", role: "", image_url: "", department: "", linkedin_url: "", display_order: 0 });
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["admin-team"],
     queryFn: async () => { const { data, error } = await supabase.from("team_members").select("*").order("display_order", { ascending: true }).order("created_at"); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ name: "", section: "Governing Body", role: "Chief Coordinator", image_url: "", department: "", linkedin_url: "", display_order: 0 }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ name: "", section: "Staff Coordinators", role: "", image_url: "", department: "", linkedin_url: "", display_order: 0 }); setEditing(null); setShowForm(false); };
 
   const handleSectionChange = (section: string) => {
     const roles = SECTION_ROLES[section] || [];
-    setForm({ ...form, section, role: roles[0] || "" });
+    setForm({ ...form, section, role: section === "Staff Coordinators" ? "Staff Coordinator" : (roles[0] || "") });
   };
 
   const handleSave = async () => {
-    if (!form.name || !form.role) { toast({ title: "Fill required fields", variant: "destructive" }); return; }
+    if (!form.name) { toast({ title: "Name is required", variant: "destructive" }); return; }
+    const isStaffCoord = form.section === "Staff Coordinators";
+    const role = isStaffCoord ? "Staff Coordinator" : form.role;
+    if (!isStaffCoord && !role) { toast({ title: "Role is required", variant: "destructive" }); return; }
     if (form.linkedin_url && !form.linkedin_url.startsWith("http")) { toast({ title: "LinkedIn URL must start with http", variant: "destructive" }); return; }
-    const dept = form.section === "Core" ? roleToDepartment(form.role) : (form.section === "Execom" ? roleToDepartment(form.role) : null);
+    const dept = (form.section === "Core" || form.section === "Execom") ? roleToDepartment(role) : null;
     try {
-      const payload: any = { name: form.name, role: form.role, section: form.section, image_url: form.image_url || null, department: dept, linkedin_url: form.linkedin_url || null, display_order: form.display_order };
+      const payload: any = { name: form.name, role, section: form.section, image_url: form.image_url || null, department: dept, linkedin_url: form.linkedin_url || null, display_order: form.display_order };
       if (editing) { const { error } = await supabase.from("team_members").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("team_members").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] });
-      toast({ title: editing ? "Updated" : "Member added" }); resetForm();
-    } catch { toast({ title: "Error saving", variant: "destructive" }); }
+      toast({ title: editing ? "Member updated" : "Member added" }); resetForm();
+    } catch { toast({ title: "Error saving member", variant: "destructive" }); }
   };
 
-  const handleDelete = async (id: string) => { await supabase.from("team_members").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] }); toast({ title: "Deleted" }); };
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from("team_members").delete().eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-team"] }); qc.invalidateQueries({ queryKey: ["team-members"] });
+      toast({ title: "Member deleted" });
+    } catch { toast({ title: "Error deleting", variant: "destructive" }); }
+  };
 
-  const startEdit = (m: any) => { setForm({ name: m.name, section: m.section, role: m.role, image_url: m.image_url || "", department: m.department || "", linkedin_url: (m as any).linkedin_url || "", display_order: m.display_order || 0 }); setEditing(m); setShowForm(true); };
+  const startEdit = (m: any) => {
+    setForm({ name: m.name, section: m.section, role: m.role, image_url: m.image_url || "", department: m.department || "", linkedin_url: (m as any).linkedin_url || "", display_order: m.display_order || 0 });
+    setEditing(m);
+    setShowForm(true);
+  };
 
-  const moveGovMember = async (id: string, direction: "up" | "down") => {
-    const govMembers = members.filter((m: any) => m.section === "Governing Body");
-    const idx = govMembers.findIndex((m: any) => m.id === id);
+  const moveMember = async (section: string, id: string, direction: "up" | "down") => {
+    const sectionMembers = members.filter((m: any) => m.section === section);
+    const idx = sectionMembers.findIndex((m: any) => m.id === id);
     if (idx < 0) return;
-    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= govMembers.length) return;
-    const a = govMembers[idx] as any;
-    const b = govMembers[swapIdx] as any;
-    await supabase.from("team_members").update({ display_order: b.display_order ?? swapIdx } as any).eq("id", a.id);
-    await supabase.from("team_members").update({ display_order: a.display_order ?? idx } as any).eq("id", b.id);
-    qc.invalidateQueries({ queryKey: ["admin-team"] });
-    qc.invalidateQueries({ queryKey: ["team-members"] });
+    await normalizeAndPersist("team_members", sectionMembers, idx, direction, "display_order", qc, ["admin-team", "team-members"]);
   };
 
   const roles = SECTION_ROLES[form.section] || [];
+  const isStaffCoord = form.section === "Staff Coordinators";
 
   return (
     <div>
@@ -560,11 +632,13 @@ const TeamAdmin = () => {
                 {Object.keys(SECTION_ROLES).map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
-            <div><label className="text-sm font-medium block mb-1">Role *</label>
-              <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                {roles.map((r) => <option key={r}>{r}</option>)}
-              </select>
-            </div>
+            {!isStaffCoord && (
+              <div><label className="text-sm font-medium block mb-1">Role *</label>
+                <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                  {roles.map((r) => <option key={r}>{r}</option>)}
+                </select>
+              </div>
+            )}
           </div>
           <ImageUpload bucket="team-images" value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} label="Member Photo" />
           <div><label className="text-sm font-medium block mb-1">LinkedIn Profile URL (optional)</label><Input placeholder="https://linkedin.com/in/..." value={form.linkedin_url} onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })} /></div>
@@ -573,7 +647,7 @@ const TeamAdmin = () => {
       )}
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
         <div className="space-y-2">
-           {["Governing Body", "Execom", "Core"].map((section) => {
+          {["Staff Coordinators", "Governing Body", "Execom", "Core"].map((section) => {
             const sectionMembers = members.filter((m: any) => m.section === section);
             if (sectionMembers.length === 0) return null;
             return (
@@ -583,21 +657,23 @@ const TeamAdmin = () => {
                   {sectionMembers.map((m: any, mIdx: number) => (
                     <div key={m.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
-                        {section === "Governing Body" && (
-                          <div className="flex flex-col gap-0.5">
-                            <Button size="icon" variant="ghost" className="h-6 w-6" disabled={mIdx === 0} onClick={() => moveGovMember(m.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
-                            <Button size="icon" variant="ghost" className="h-6 w-6" disabled={mIdx === sectionMembers.length - 1} onClick={() => moveGovMember(m.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
-                          </div>
-                        )}
+                        <div className="flex flex-col gap-0.5">
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={mIdx === 0} onClick={() => moveMember(section, m.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={mIdx === sectionMembers.length - 1} onClick={() => moveMember(section, m.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
+                        </div>
                         {m.image_url && <img src={m.image_url} alt="" className="h-10 w-10 rounded-full object-cover" />}
                         <div>
                           <h4 className="font-medium text-sm">{m.name}</h4>
-                          <p className="text-xs text-muted-foreground">{m.role}{m.department ? ` · ${m.department}` : ""}{m.linkedin_url ? " · 🔗" : ""}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {section !== "Staff Coordinators" && m.role}
+                            {m.department ? ` · ${m.department}` : ""}
+                            {m.linkedin_url ? " · 🔗" : ""}
+                          </p>
                         </div>
                       </div>
                       <div className="flex gap-1">
                         <Button size="icon" variant="ghost" onClick={() => startEdit(m)}><Edit2 className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => handleDelete(m.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        <DeleteButton onConfirm={() => handleDelete(m.id)} label={`"${m.name}"`} />
                       </div>
                     </div>
                   ))}
@@ -632,7 +708,6 @@ const PopupAdmin = () => {
   const handleSave = async () => {
     if (!form.title) { toast({ title: "Title is required", variant: "destructive" }); return; }
     try {
-      // If activating, deactivate all others first
       if (form.is_active) {
         await supabase.from("popups").update({ is_active: false }).neq("id", editingId || "");
       }
@@ -648,7 +723,7 @@ const PopupAdmin = () => {
       qc.invalidateQueries({ queryKey: ["active-popup"] });
       toast({ title: editingId ? "Popup updated" : "Popup created" });
       resetForm();
-    } catch { toast({ title: "Error saving", variant: "destructive" }); }
+    } catch { toast({ title: "Error saving popup", variant: "destructive" }); }
   };
 
   const handleDelete = async (id: string) => {
@@ -657,7 +732,7 @@ const PopupAdmin = () => {
       qc.invalidateQueries({ queryKey: ["admin-popups"] });
       qc.invalidateQueries({ queryKey: ["active-popup"] });
       toast({ title: "Popup deleted" });
-    } catch { toast({ title: "Error", variant: "destructive" }); }
+    } catch { toast({ title: "Error deleting popup", variant: "destructive" }); }
   };
 
   const startEdit = (p: any) => {
@@ -714,7 +789,7 @@ const PopupAdmin = () => {
                   {p.is_active ? "Deactivate" : "Activate"}
                 </Button>
                 <Button size="icon" variant="ghost" onClick={() => startEdit(p)}><Edit2 className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                <DeleteButton onConfirm={() => handleDelete(p.id)} label={`popup "${p.title}"`} />
               </div>
             </div>
           ))}

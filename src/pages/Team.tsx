@@ -26,6 +26,32 @@ const LinkedInIcon = ({ url }: { url?: string | null }) => {
   );
 };
 
+// Staff Coordinators — same style as Governing Body but without role label
+const StaffCoordinatorCard = ({ member, i }: { member: Member; i: number }) => (
+  <motion.div
+    className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: i * 0.08 }}
+  >
+    {member.image_url ? (
+      <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+    ) : (
+      <div className="w-full h-full bg-secondary flex items-center justify-center">
+        <Users className="h-12 w-12 text-muted-foreground" />
+      </div>
+    )}
+    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+    <div className="absolute bottom-0 left-0 right-0 p-4">
+      <div className="flex items-center gap-2">
+        <h3 className="font-display font-semibold text-sm">{member.name}</h3>
+        <LinkedInIcon url={member.linkedin_url} />
+      </div>
+    </div>
+  </motion.div>
+);
+
 const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
     className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
@@ -123,6 +149,7 @@ const Team = () => {
     },
   });
 
+  const staffCoordinators = members.filter((m: any) => m.section === "Staff Coordinators");
   const governing = members.filter((m: any) => m.section === "Governing Body");
   const execom = members.filter((m: any) => m.section === "Execom");
   const core = members.filter((m: any) => m.section === "Core");
@@ -138,13 +165,30 @@ const Team = () => {
         <div className="container">
           <span className="section-badge mb-4 inline-block">Organisational Hierarchy</span>
           <h1 className="section-heading text-4xl md:text-5xl mb-4">
-            Our <span className="gradient-text italic">Leadership</span>
+            Our <span className="gradient-text italic">Team</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto">
             Structured for excellence, driven by passion. Meet the tiers of talent shaping the future of eloquence at MJCET.
           </p>
         </div>
       </section>
+
+      {/* Staff Coordinators */}
+      {staffCoordinators.length > 0 && (
+        <section className="py-16">
+          <div className="container">
+            <div className="mb-8">
+              <h2 className="font-display text-2xl font-bold">Staff Coordinators</h2>
+              <div className="w-16 h-0.5 bg-primary mt-2" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {staffCoordinators.map((m: any, i: number) => (
+                <StaffCoordinatorCard key={m.id} member={m} i={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Governing Body */}
       <section className="py-16">
@@ -179,15 +223,15 @@ const Team = () => {
         <div className="container">
           <div className="mb-10">
             <h2 className="font-display text-2xl font-bold">
-              EXECOM <span className="gradient-text">2025</span>
+              Executive Committee <span className="gradient-text">2025</span>
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">Executive Committee driving the functional departments.</p>
+            <p className="text-sm text-muted-foreground mt-1">The executive committee driving the functional departments.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
             {execom.map((m: any, i: number) => (
               <ExecomCard key={m.id} member={m} i={i} />
             ))}
-            {execom.length === 0 && <EmptyState text="No execom members yet." />}
+            {execom.length === 0 && <EmptyState text="No executive committee members yet." />}
           </div>
         </div>
       </section>
@@ -197,7 +241,7 @@ const Team = () => {
         <div className="container">
           <div className="mb-10">
             <h2 className="font-display text-2xl font-bold">
-              <span className="italic">CORE</span> Members Portfolios
+              <span className="italic">Core</span> Members Portfolios
             </h2>
             <p className="text-sm text-muted-foreground mt-1">The engine room of Orators Club activities, organized by specialized departments.</p>
           </div>
@@ -233,7 +277,7 @@ const Team = () => {
                   <CoreCard key={m.id} member={m} i={i} />
                 ))}
               </div>
-              {filteredCore.length === 0 && <EmptyState text={`No ${coreFilter} Core members yet.`} />}
+              {filteredCore.length === 0 && <EmptyState text={`No ${coreFilter} core members yet.`} />}
             </motion.div>
           </AnimatePresence>
         </div>
