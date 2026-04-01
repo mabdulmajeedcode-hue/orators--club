@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Loader2, ExternalLink, X } from "lucide-react";
+import { Play, Loader2, ExternalLink, X, Download, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +46,6 @@ const PodcastModal = ({ ep, onClose }: { ep: any; onClose: () => void }) => {
         </button>
 
         <div className="flex flex-col md:flex-row flex-1 min-h-0">
-          {/* Video / Image area */}
           <div className="md:flex-1 flex-shrink-0">
             {embedUrl ? (
               <div className="w-full aspect-video">
@@ -59,7 +58,6 @@ const PodcastModal = ({ ep, onClose }: { ep: any; onClose: () => void }) => {
             ) : null}
           </div>
 
-          {/* Sidebar description */}
           <div className="md:w-72 lg:w-80 border-t md:border-t-0 md:border-l border-border flex flex-col min-h-0">
             <ScrollArea className="flex-1 p-5">
               <h2 className="font-display font-bold text-xl mb-3">{ep.title}</h2>
@@ -133,8 +131,23 @@ const Podcasts = () => {
     },
   });
 
+  // Publications query
+  const { data: publications = [], isLoading: loadingPubs } = useQuery({
+    queryKey: ["publications"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("publications")
+        .select("*")
+        .order("display_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <div className="min-h-screen pt-16">
+      {/* Podcasts Section */}
       <section className="py-20">
         <div className="container">
           <div className="mb-12">
@@ -161,6 +174,57 @@ const Podcasts = () => {
           <AnimatePresence>
             {selectedPodcast && <PodcastModal ep={selectedPodcast} onClose={() => setSelectedPodcast(null)} />}
           </AnimatePresence>
+        </div>
+      </section>
+
+      {/* Newsletters & Publications Section */}
+      <section className="py-20 bg-card">
+        <div className="container">
+          <div className="mb-12">
+            <span className="section-badge mb-4 inline-block">Resources</span>
+            <h2 className="section-heading text-3xl md:text-4xl">
+              Newsletters & <span className="gradient-text">Publications</span>
+            </h2>
+            <p className="text-muted-foreground mt-2">Download our publications, newsletters, and reports.</p>
+          </div>
+
+          {loadingPubs ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : publications.length === 0 ? (
+            <p className="text-center text-muted-foreground py-12">No publications yet. Stay tuned!</p>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {publications.map((pub: any, i: number) => (
+                <motion.div
+                  key={pub.id}
+                  className="rounded-xl border border-border bg-background p-6 card-hover"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <FileText className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display font-semibold text-lg">{pub.title}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{pub.year} · {pub.file_type?.toUpperCase()}</p>
+                      {pub.description && (
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{pub.description}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4" size="sm" asChild>
+                    <a href={pub.file_url} download target="_blank" rel="noopener noreferrer">
+                      <Download className="h-4 w-4 mr-2" /> Download
+                    </a>
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
