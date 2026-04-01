@@ -1,21 +1,5 @@
 import { motion } from "framer-motion";
-import { Trophy, Calendar, Award, Users } from "lucide-react";
 import aboutHero from "@/assets/about-hero.jpg";
-import missionImg from "@/assets/mission.jpg";
-
-const stats = [
-{ icon: Trophy, value: "50+", label: "Trophies Won" },
-{ icon: Users, value: "200+", label: "Members" },
-{ icon: Calendar, value: "12", label: "Countries Visited" },
-{ icon: Award, value: "9", label: "Teams Active" }];
-
-
-const timeline = [
-{ year: "2015", title: "Club Founded", desc: "Five passionate students gathered in a small library room with a vision to create a space for fearless self-expression." },
-{ year: "2017", title: "First Regional Win", desc: "Just two years after founding, we secured our first major victory at the North Regional Debate Championship." },
-{ year: "2019", title: "National Finalists", desc: "Competing against 50+ universities, our team reached the national finals, forging a standard of excellence." },
-{ year: "2023", title: "Hosted State Championship", desc: "A milestone in leadership. We successfully hosted the largest State Championship in history, welcoming over 500 debaters." }];
-
 
 const About = () => {
   return (
@@ -29,98 +13,142 @@ const About = () => {
         <div className="container relative z-10 text-center">
           <span className="section-badge mb-4 inline-block">About Us</span>
           <h1 className="section-heading text-5xl md:text-7xl mb-4">
-            Forging the <span className="gradient-text">Voices</span> of Tomorrow
+            The <span className="gradient-text">Orators'</span> Club
           </h1>
           <p className="max-w-xl mx-auto text-muted-foreground">
-            We are a collective of thinkers, speakers, and leaders dedicated to the art of persuasion. In a noisy world, we teach the discipline of being heard.
+            A legacy of voice, vision, and victory — since 2003.
           </p>
         </div>
       </section>
 
-      {/* Mission */}
+      {/* About the Club */}
       <section className="py-24">
-        <div className="container grid md:grid-cols-2 gap-16 items-center">
-          <motion.img
-
-            alt="Discussion"
-            className="rounded-xl w-full aspect-[4/3] object-cover"
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }} src="/lovable-uploads/90563302-07ef-40ee-912b-74e1331bc401.jpg" />
-
+        <div className="container max-w-4xl">
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}>
-
-            <h2 className="section-heading text-3xl md:text-4xl mb-2">Our <span className="gradient-text">Mission</span></h2>
-            <div className="w-12 h-1 bg-primary rounded mb-6" />
-            <blockquote className="text-lg italic text-foreground/80 mb-4 border-l-2 border-primary pl-4">
-              "To cultivate critical thinking and articulate expression in the leaders of the future."
-            </blockquote>
-            <p className="text-muted-foreground leading-relaxed mb-3">
-              We believe that speech is not just about talking. It is about structuring thought, understanding opposition, and delivering truth with impact.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              Through rigorous training and competitive discourse, we empower students to dismantle weak arguments and build stronger societies.
-            </p>
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">About the <span className="gradient-text">Club</span></h2>
+            <div className="w-16 h-1 bg-primary rounded mb-8" />
+            <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
+              <p>
+                Orators' Club was founded in 2003 under the Department of English at Muffakham Jah College of Engineering and Technology (MJCET), part of the Sultan-Ul-Uloom Education Society. An autonomous institution accredited by NAAC with A+ and NBA, affiliated to Osmania University and approved by AICTE, MJCET is one of Hyderabad's most respected engineering colleges.
+              </p>
+              <p>
+                After a revival in 2009, the club has grown into one of the most active student organisations on campus — bridging the gap between technical education and communication excellence. What began as a small initiative has blossomed into a vibrant community of thinkers, speakers, and future leaders.
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats */}
+      {/* What We Do */}
       <section className="py-20 bg-card">
-        <div className="container grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((s, i) =>
+        <div className="container max-w-4xl">
           <motion.div
-            key={s.label}
-            className="text-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}>
-
-              <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
-              <div className="text-4xl font-display font-bold gradient-text mb-1">{s.value}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">{s.label}</div>
-            </motion.div>
-          )}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">What We <span className="gradient-text">Do</span></h2>
+            <div className="w-16 h-1 bg-primary rounded mb-8" />
+            <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
+              <p>
+                The club runs a wide range of activities — formal events like Debates, Group Discussions, Elocution Competitions, Essay Writing, Mock Interviews, and PowerPoint Presentations; creative events like Poster Making, Slogan Writing, Picture Perception, and Photography.
+              </p>
+              <p>
+                Our flagship programmes include <strong className="text-foreground">ADSOPHOS</strong> (the annual technical fest), <strong className="text-foreground">ORATORIA</strong> (literary fest), <strong className="text-foreground">Spectrum</strong> (creative arts sub-chapter), and <strong className="text-foreground">MJ MUN</strong> (Model United Nations) — each providing students with unique opportunities to learn, compete, and grow.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* History */}
-      <section className="py-24">
-        <div className="container max-w-3xl">
-          <div className="text-center mb-16">
-            <h2 className="section-heading text-3xl md:text-4xl">Our <span className="gradient-text">History</span></h2>
-            <p className="text-muted-foreground mt-2">A legacy of voice and victory.</p>
-          </div>
-          <div className="space-y-12">
-            {timeline.map((item, i) =>
-            <motion.div
-              key={item.year}
-              className="flex gap-6"
-              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}>
-
-                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <span className="font-display font-bold text-primary text-sm">{item.year}</span>
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-xl mb-1">{item.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
-                </div>
-              </motion.div>
-            )}
-          </div>
+      {/* Publications & Achievements */}
+      <section className="py-20">
+        <div className="container max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Publications & <span className="gradient-text">Achievements</span></h2>
+            <div className="w-16 h-1 bg-primary rounded mb-8" />
+            <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
+              <p>
+                The club has produced notable publications including <em>Vestige</em> (a collection of short stories and poems), a Coffee Table Book, and a Poetry & Photography Collection. These works showcase the creative depth of our members and their literary talents beyond the stage.
+              </p>
+              <p>
+                Members have won awards at intercollegiate and state-level competitions, including Best Delegate prizes at Model United Nations events — a testament to the club's commitment to nurturing excellence.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
-    </div>);
 
+      {/* Department of English */}
+      <section className="py-20 bg-card">
+        <div className="container max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">About the <span className="gradient-text">Department of English</span></h2>
+            <div className="w-16 h-1 bg-primary rounded mb-8" />
+            <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
+              <p>
+                The Department of English at MJCET is committed to developing well-rounded graduates. With experienced and widely published faculty, the department focuses not only on language proficiency but on inspiring students to lead ethical, fulfilling lives with strong personal accountability.
+              </p>
+              <p>
+                Faculty members actively mentor students through the Orators' Club and have contributed significantly to research and academic publications, making the department a cornerstone of holistic education at MJCET.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Sub-Chapters */}
+      <section className="py-20">
+        <div className="container max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Sub-<span className="gradient-text">Chapters</span></h2>
+            <div className="w-16 h-1 bg-primary rounded mb-8" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="p-6 rounded-xl border border-border bg-card">
+                <h3 className="font-display font-semibold text-lg mb-3 text-foreground">Spectrum</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  A creative arts platform where students explore visual arts, calligraphy, T-shirt design, and the Human Library concept — celebrating creativity in all its forms.
+                </p>
+              </div>
+              <div className="p-6 rounded-xl border border-border bg-card">
+                <h3 className="font-display font-semibold text-lg mb-3 text-foreground">Speakers' Forum</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  A regular platform for public speaking practice and peer feedback, providing a safe space to grow confidence and refine delivery.
+                </p>
+              </div>
+              <div className="p-6 rounded-xl border border-border bg-card">
+                <h3 className="font-display font-semibold text-lg mb-3 text-foreground">Book Club</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Regular gatherings to discuss literature, authors, and ideas — fostering a deeper love for the written word and intellectual discourse.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default About;

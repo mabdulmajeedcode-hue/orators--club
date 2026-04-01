@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const tabs = ["All Events", "Upcoming", "Past"];
 
+/* Bug 1.1 fix: event modal is now fully scrollable with uncropped poster */
 const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => {
   const upcoming = event.status === "upcoming";
 
@@ -22,40 +22,46 @@ const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => 
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-8 px-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
       <motion.div
-        className="relative z-10 w-full max-w-3xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col"
+        className="relative z-10 w-full max-w-3xl rounded-2xl border border-border bg-card shadow-2xl overflow-hidden my-auto"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", duration: 0.4 }}
       >
-        <button onClick={onClose} className="absolute top-3 right-3 z-20 rounded-full bg-background/80 p-2 text-foreground hover:bg-background transition-colors">
+        {/* Close button — always visible with high z-index */}
+        <button onClick={onClose} className="absolute top-3 right-3 z-30 rounded-full bg-background/90 p-2 text-foreground hover:bg-background transition-colors shadow-md">
           <X className="h-5 w-5" />
         </button>
 
-        <div className="relative h-56 sm:h-72 bg-secondary flex-shrink-0">
-          {event.image ? (
-            <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">No Image</div>
-          )}
-          <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-bold font-display">
-            {format(new Date(event.date), "MMM dd, yyyy")}
+        {/* Poster image — full natural size, never cropped */}
+        {event.image && (
+          <div className="relative bg-secondary">
+            <img src={event.image} alt={event.title} className="w-full h-auto object-contain" />
+            <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-bold font-display">
+              {format(new Date(event.date), "MMM dd, yyyy")}
+            </div>
+            {!upcoming && (
+              <div className="absolute bottom-3 left-3">
+                <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1" /> Concluded</Badge>
+              </div>
+            )}
           </div>
-          {!upcoming && (
-            <div className="absolute bottom-3 left-3">
-              <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1" /> Concluded</Badge>
+        )}
+
+        {/* Full description — no height constraints */}
+        <div className="p-6">
+          {!event.image && (
+            <div className="mb-2 text-sm font-bold text-primary font-display">
+              {format(new Date(event.date), "MMM dd, yyyy")}
             </div>
           )}
-        </div>
-
-        <ScrollArea className="flex-1 p-6">
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">{event.category}</span>
           <h2 className="font-display font-bold text-2xl mt-1 mb-4">{event.title}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{event.description}</p>
@@ -67,7 +73,7 @@ const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => 
               </a>
             </Button>
           )}
-        </ScrollArea>
+        </div>
       </motion.div>
     </motion.div>
   );
