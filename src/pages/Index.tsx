@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import heroTeam from "@/assets/hero-team.jpg";
-import missionImg from "@/assets/mission.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -15,18 +14,18 @@ const fadeUp = {
 };
 
 const features = [
-{ icon: BookOpen, title: "Workshops", desc: "Weekly training sessions focused on rhetoric, logic, and delivery mechanics." },
-{ icon: Trophy, title: "Competitions", desc: "Regional and national debate tournaments to test your skills against the best." },
-{ icon: Users, title: "Community", desc: "A lifelong network of alumni, mentors, and peers who share your passion." },
-{ icon: Mic, title: "Podcast Series", desc: "Listen to debates, speeches, and interviews from our club members." }];
-
+  { icon: BookOpen, title: "Workshops", desc: "Weekly training sessions focused on rhetoric, logic, and delivery mechanics." },
+  { icon: Trophy, title: "Competitions", desc: "Regional and national debate tournaments to test your skills against the best." },
+  { icon: Users, title: "Community", desc: "A lifelong network of alumni, mentors, and peers who share your passion." },
+  { icon: Mic, title: "Podcast Series", desc: "Listen to debates, speeches, and interviews from our club members." },
+];
 
 const stats = [
-{ icon: Trophy, value: "50+", label: "Active Members" },
-{ icon: Calendar, value: "200+", label: "Events Conducted" },
-{ icon: Award, value: "12", label: "Major Wins" },
-{ icon: Headphones, value: "9", label: "Annual Workshops" }];
-
+  { icon: Trophy, value: "50+", label: "Active Members" },
+  { icon: Calendar, value: "200+", label: "Events Conducted" },
+  { icon: Award, value: "12", label: "Major Wins" },
+  { icon: Headphones, value: "9", label: "Annual Workshops" },
+];
 
 const Index = () => {
   const { toast } = useToast();
@@ -56,33 +55,48 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
+      {/* Hero — updated text hierarchy per Section 2.1 */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroTeam} alt="Orators Club team" className="w-full h-full object-cover grayscale" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background" />
         </div>
         <div className="container relative z-10 text-center py-32">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-            <span className="section-badge mb-6 inline-block">A FLAGSHIP OF DEPARTMENT OF ENGLISH, MJCET</span>
+          {/* Lines 1-5: Institutional text */}
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="mb-4">
+            <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">Muffakham Jah College of Engineering and Technology</p>
+            <p className="text-xs md:text-sm text-muted-foreground">(Sultan-Ul-Uloom Education Society)</p>
+            <p className="text-xs md:text-sm text-muted-foreground">An Autonomous Institution</p>
+            <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Approved by AICTE, Affiliated to Osmania University</p>
+            <p className="text-[10px] md:text-xs text-muted-foreground">Accredited by NAAC with A+ and NBA</p>
           </motion.div>
-          <motion.h1
-            className="section-heading text-5xl md:text-7xl lg:text-8xl mb-6"
-            initial="hidden" animate="visible" variants={fadeUp} custom={1}>
 
+          {/* Line 6: Club name — dominant heading */}
+          <motion.h1
+            className="section-heading text-5xl md:text-7xl lg:text-8xl mb-2"
+            initial="hidden" animate="visible" variants={fadeUp} custom={1}
+          >
             ORATORS'{" "}
             <span className="gradient-text">CLUB</span>
           </motion.h1>
-          <motion.p
-            className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10"
-            initial="hidden" animate="visible" variants={fadeUp} custom={2}>Orators Club is the premier public speaking and debate society of MJCET, 
-Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally.
 
+          {/* Line 7: Sub-heading */}
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={2}>
+            <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
+          </motion.div>
+
+          {/* Tagline */}
+          <motion.p
+            className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10 italic"
+            initial="hidden" animate="visible" variants={fadeUp} custom={3}
+          >
+            "Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally"
           </motion.p>
+
           <motion.div
             className="flex flex-wrap justify-center gap-4"
-            initial="hidden" animate="visible" variants={fadeUp} custom={3}>
-
+            initial="hidden" animate="visible" variants={fadeUp} custom={4}
+          >
             <Button size="lg" asChild>
               <Link to="/join">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
@@ -93,7 +107,7 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
         </div>
       </section>
 
-      {/* Mission */}
+      {/* About / Mission — Section 2.2 rewritten as warm prose */}
       <section className="py-24">
         <div className="container">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -102,13 +116,16 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="section-badge mb-4 inline-block">About Us</span>
-              <h2 className="section-heading text-3xl md:text-4xl mb-4">Our <span className="gradient-text">Mission</span></h2>
+              <h2 className="section-heading text-3xl md:text-4xl mb-4">Our <span className="gradient-text">Story</span></h2>
               <div className="w-12 h-1 bg-primary rounded mb-6" />
               <p className="text-muted-foreground leading-relaxed mb-4">
-                The Orators Club empowers students to master the art of persuasion, structured argumentation, and impactful communication.
+                Established in 2003 by the Department of English at MJCET and revived with fresh energy in 2009, the Orators' Club has grown into one of the most active and beloved student organisations on campus. It is a one-of-a-kind platform where engineering students step beyond equations and algorithms to master the art of expression — building oratory skill, communication finesse, and the soft skills that set leaders apart.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                From formal events like Debates, Group Discussions, Elocution, Essay Writing, Mock Interviews, and PowerPoint Presentations, to creative pursuits including Poster Making, Slogan Writing, Picture Perception, and Photography — the club offers something for every voice waiting to be heard.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Through debates, workshops, podcasts, and competitions, we nurture confident leaders prepared to engage with the world intellectually and ethically.
+                Members don't just build language and reasoning skills; they cultivate creative thinking, leadership, and civic responsibility. With numerous awards at intercollegiate and state-level competitions, joining the Orators' Club is the first step toward conquering stage fear, breaking self-doubt, and preparing yourself for the professional world.
               </p>
             </motion.div>
           </div>
@@ -123,22 +140,22 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
             <h2 className="section-heading text-3xl md:text-4xl">Core <span className="gradient-text">Features</span></h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((f, i) =>
-            <motion.div
-              key={f.title}
-              className="p-6 rounded-xl border border-border bg-background card-hover"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}>
-
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                className="p-6 rounded-xl border border-border bg-background card-hover"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+              >
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <f.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
               </motion.div>
-            )}
+            ))}
           </div>
         </div>
       </section>
@@ -147,20 +164,20 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
       <section className="py-24">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((s, i) =>
-            <motion.div
-              key={s.label}
-              className="text-center"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}>
-
+            {stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                className="text-center"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+              >
                 <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
                 <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">{s.value}</div>
                 <div className="text-sm text-muted-foreground uppercase tracking-wider">{s.label}</div>
               </motion.div>
-            )}
+            ))}
           </div>
         </div>
       </section>
@@ -178,8 +195,8 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex-1" />
-
+              className="flex-1"
+            />
             <Button type="submit" disabled={subscribing}>
               {subscribing ? "..." : <><Send className="h-4 w-4 mr-2" /> Subscribe</>}
             </Button>
@@ -204,8 +221,8 @@ Empowering speakers with confidence, eloquence, and influence to drive positive 
           </div>
         </div>
       </section>
-    </div>);
-
+    </div>
+  );
 };
 
 export default Index;

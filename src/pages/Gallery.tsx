@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2, Image as ImageIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +19,17 @@ const Gallery = () => {
     },
   });
 
+  // Extract unique years and sort descending; null years go at end
+  const years = Array.from(new Set(galleryEvents.map((ge: any) => ge.year).filter(Boolean))).sort((a: number, b: number) => b - a);
+  const [activeYear, setActiveYear] = useState<number | "all">("all");
+
+  // Default to most recent year when data loads
+  const effectiveYear = activeYear === "all" && years.length > 0 ? years[0] : activeYear;
+
+  const filtered = effectiveYear === "all"
+    ? galleryEvents
+    : galleryEvents.filter((ge: any) => ge.year === effectiveYear);
+
   return (
     <div className="min-h-screen pt-16">
       <section className="py-20">
@@ -29,15 +41,44 @@ const Gallery = () => {
             </h1>
           </div>
 
+          {/* Year-wise filter tabs */}
+          {years.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mb-10">
+              <button
+                onClick={() => setActiveYear("all")}
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                  activeYear === "all"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                }`}
+              >
+                All Years
+              </button>
+              {years.map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setActiveYear(y as number)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                    effectiveYear === y
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                  }`}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          )}
+
           {isLoading ? (
             <div className="flex justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : galleryEvents.length === 0 ? (
+          ) : filtered.length === 0 ? (
             <p className="text-center text-muted-foreground py-20">No gallery items yet.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {galleryEvents.map((ge: any, i: number) => (
+              {filtered.map((ge: any, i: number) => (
                 <motion.div
                   key={ge.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -58,7 +99,10 @@ const Gallery = () => {
                       <div className="p-4">
                         <h3 className="font-display font-semibold text-lg">{ge.title}</h3>
                         {ge.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{ge.description}</p>}
-                        <p className="text-xs text-primary mt-2">{ge.gallery_event_images?.length || 0} photos</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <p className="text-xs text-primary">{ge.gallery_event_images?.length || 0} photos</p>
+                          {ge.year && <p className="text-xs text-muted-foreground">{ge.year}</p>}
+                        </div>
                       </div>
                     </div>
                   </Link>

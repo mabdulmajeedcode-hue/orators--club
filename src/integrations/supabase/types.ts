@@ -153,6 +153,7 @@ export type Database = {
           display_order: number
           id: string
           title: string
+          year: number | null
         }
         Insert: {
           cover_image?: string | null
@@ -161,6 +162,7 @@ export type Database = {
           display_order?: number
           id?: string
           title: string
+          year?: number | null
         }
         Update: {
           cover_image?: string | null
@@ -169,6 +171,7 @@ export type Database = {
           display_order?: number
           id?: string
           title?: string
+          year?: number | null
         }
         Relationships: []
       }
@@ -292,6 +295,39 @@ export type Database = {
           is_active?: boolean
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      publications: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          file_type: string
+          file_url: string
+          id: string
+          title: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          file_type?: string
+          file_url: string
+          id?: string
+          title: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          title?: string
+          year?: number
         }
         Relationships: []
       }

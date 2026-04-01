@@ -10,10 +10,10 @@ const Footer = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 font-display font-bold text-lg">
               <AudioLines className="h-5 w-5 text-primary" />
-              ORATORS CLUB
+              ORATORS' CLUB
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Cultivating eloquence, critical thinking, and leadership through the art of public speaking. The premier voice of MJCET.
+              Cultivating eloquence, critical thinking, and leadership through the art of public speaking. A flagship of the Department of English, Muffakham Jah College of Engineering and Technology.
             </p>
           </div>
 
@@ -46,16 +46,16 @@ const Footer = () => {
                 href="https://www.instagram.com/oratorsclubmjcet?igsh=cGtnYzFjamlteDY2"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-
+                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Instagram className="h-4 w-4" />
               </a>
               <a
                 href="https://www.linkedin.com/company/orators-club-mjcet/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-
+                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Linkedin className="h-4 w-4" />
               </a>
             </div>
@@ -67,16 +67,11 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">© 2026 MJCET Department of English. All rights reserved.</p>
-          <div className="flex gap-6 text-xs text-muted-foreground">
-            <span className="hover:text-primary transition-colors cursor-pointer">
-            </span>
-            <span className="hover:text-primary transition-colors cursor-pointer">
-</span>
-          </div>
+          <p className="text-xs text-muted-foreground">© 2026 Muffakham Jah College of Engineering and Technology — Department of English. All rights reserved.</p>
         </div>
       </div>
-    </footer>);
+    </footer>
+  );
 };
 
 export default Footer;
