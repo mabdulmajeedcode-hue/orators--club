@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Plus, Edit2, LogOut, Loader2, Upload, Image as ImageIcon, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
+import { Trash2, Plus, Edit2, LogOut, Loader2, Upload, Image as ImageIcon, ArrowUp, ArrowDown, AlertTriangle, FileText } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { uploadImage } from "@/lib/upload";
 import {
@@ -39,7 +39,7 @@ const roleToDepartment = (role: string): string | null => {
   return null;
 };
 
-// --- Shared reorder helper ---
+// --- Shared reorder helper: swaps two items and normalizes all positions ---
 const normalizeAndPersist = async (
   table: string,
   items: any[],
@@ -53,7 +53,6 @@ const normalizeAndPersist = async (
   if (swapIdx < 0 || swapIdx >= items.length) return;
   const reordered = [...items];
   [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
-  // Normalize to 1,2,3...
   const updates = reordered.map((item, i) => ({ id: item.id, [orderField]: i + 1 }));
   for (const u of updates) {
     await (supabase.from(table as any) as any).update({ [orderField]: u[orderField] }).eq("id", u.id);
@@ -113,6 +112,7 @@ const Admin = () => {
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="podcasts">Podcasts</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="publications">Publications</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
             <TabsTrigger value="popup">Popup</TabsTrigger>
             <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
@@ -122,6 +122,7 @@ const Admin = () => {
           <TabsContent value="events"><EventsAdmin /></TabsContent>
           <TabsContent value="podcasts"><PodcastsAdmin /></TabsContent>
           <TabsContent value="gallery"><GalleryEventsAdmin /></TabsContent>
+          <TabsContent value="publications"><PublicationsAdmin /></TabsContent>
           <TabsContent value="team"><TeamAdmin /></TabsContent>
           <TabsContent value="popup"><PopupAdmin /></TabsContent>
           <TabsContent value="subscribers"><SubscribersView /></TabsContent>
@@ -216,6 +217,7 @@ const EventsAdmin = () => {
     const idx = events.findIndex((e: any) => e.id === id);
     if (idx < 0) return;
     await normalizeAndPersist("events", events, idx, direction, "display_order", qc, ["admin-events", "events"]);
+    toast({ title: "Order updated" });
   };
 
   return (
@@ -324,6 +326,7 @@ const PodcastsAdmin = () => {
     const idx = podcasts.findIndex((p: any) => p.id === id);
     if (idx < 0) return;
     await normalizeAndPersist("podcasts", podcasts, idx, direction, "display_order", qc, ["admin-podcasts", "podcasts"]);
+    toast({ title: "Order updated" });
   };
 
   return (
@@ -371,13 +374,13 @@ const PodcastsAdmin = () => {
   );
 };
 
-// ---- Gallery Events Admin (Bug 2 fix: per-gallery upload with locked galleryId) ----
+// ---- Gallery Events Admin (with year field) ----
 const GalleryEventsAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: "", description: "", cover_image: "" });
+  const [form, setForm] = useState({ title: "", description: "", cover_image: "", year: new Date().getFullYear() });
   const [uploadingForGallery, setUploadingForGallery] = useState<string | null>(null);
 
   const { data: galleryEvents = [], isLoading } = useQuery({
@@ -392,12 +395,12 @@ const GalleryEventsAdmin = () => {
     },
   });
 
-  const resetForm = () => { setForm({ title: "", description: "", cover_image: "" }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: "", description: "", cover_image: "", year: new Date().getFullYear() }); setEditing(null); setShowForm(false); };
 
   const handleSave = async () => {
     if (!form.title) { toast({ title: "Title is required", variant: "destructive" }); return; }
     try {
-      const payload = { title: form.title, description: form.description || null, cover_image: form.cover_image || null };
+      const payload = { title: form.title, description: form.description || null, cover_image: form.cover_image || null, year: form.year || null };
       if (editing) {
         const { error } = await supabase.from("gallery_events").update(payload).eq("id", editing.id);
         if (error) throw error;
@@ -414,7 +417,6 @@ const GalleryEventsAdmin = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      // Delete images first, then the gallery event
       await supabase.from("gallery_event_images").delete().eq("gallery_event_id", id);
       await supabase.from("gallery_events").delete().eq("id", id);
       qc.invalidateQueries({ queryKey: ["admin-gallery-events"] });
@@ -423,12 +425,10 @@ const GalleryEventsAdmin = () => {
     } catch { toast({ title: "Error deleting gallery", variant: "destructive" }); }
   };
 
-  // Bug 2 fix: galleryId is captured at call time, not via a shared ref
   const handleAddImages = async (galleryEventId: string, files: FileList) => {
     if (!files || files.length === 0) return;
     setUploadingForGallery(galleryEventId);
     try {
-      // Get current max image_order for this gallery
       const ge = galleryEvents.find((g: any) => g.id === galleryEventId) as any;
       const existingImages = ge?.gallery_event_images || [];
       let maxOrder = existingImages.reduce((max: number, img: any) => Math.max(max, img.image_order ?? 0), 0);
@@ -457,7 +457,7 @@ const GalleryEventsAdmin = () => {
   };
 
   const startEdit = (ge: any) => {
-    setForm({ title: ge.title, description: ge.description || "", cover_image: ge.cover_image || "" });
+    setForm({ title: ge.title, description: ge.description || "", cover_image: ge.cover_image || "", year: ge.year || new Date().getFullYear() });
     setEditing(ge);
     setShowForm(true);
   };
@@ -466,6 +466,7 @@ const GalleryEventsAdmin = () => {
     const idx = galleryEvents.findIndex((ge: any) => ge.id === id);
     if (idx < 0) return;
     await normalizeAndPersist("gallery_events", galleryEvents, idx, direction, "display_order", qc, ["admin-gallery-events", "gallery-events"]);
+    toast({ title: "Order updated" });
   };
 
   const moveImage = async (galleryEventId: string, imageId: string, direction: "up" | "down") => {
@@ -475,6 +476,7 @@ const GalleryEventsAdmin = () => {
     const idx = imgs.findIndex((img: any) => img.id === imageId);
     if (idx < 0) return;
     await normalizeAndPersist("gallery_event_images", imgs, idx, direction, "image_order", qc, ["admin-gallery-events", "gallery-event-images"]);
+    toast({ title: "Image order updated" });
   };
 
   return (
@@ -485,7 +487,10 @@ const GalleryEventsAdmin = () => {
       </div>
       {showForm && (
         <div className="rounded-xl border border-border p-6 mb-6 space-y-4">
-          <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+            <div><label className="text-sm font-medium block mb-1">Year</label><Input type="number" value={form.year} onChange={(e) => setForm({ ...form, year: parseInt(e.target.value) || new Date().getFullYear() })} placeholder="e.g. 2024" /></div>
+          </div>
           <div><label className="text-sm font-medium block mb-1">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
           <ImageUpload bucket="gallery-images" value={form.cover_image} onChange={(url) => setForm({ ...form, cover_image: url })} label="Cover Image" />
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
@@ -504,7 +509,7 @@ const GalleryEventsAdmin = () => {
                   {ge.cover_image && <img src={ge.cover_image} alt="" className="h-12 w-12 rounded object-cover" />}
                   <div>
                     <h3 className="font-medium">{ge.title}</h3>
-                    <p className="text-xs text-muted-foreground">{ge.gallery_event_images?.length || 0} photos</p>
+                    <p className="text-xs text-muted-foreground">{ge.year ? `Year: ${ge.year} · ` : ""}{ge.gallery_event_images?.length || 0} photos</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -512,7 +517,6 @@ const GalleryEventsAdmin = () => {
                   <DeleteButton onConfirm={() => handleDelete(ge.id)} label={`gallery "${ge.title}" and all its images`} />
                 </div>
               </div>
-              {/* Images grid */}
               <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mb-3">
                 {ge.gallery_event_images?.map((img: any, imgIdx: number) => (
                   <div key={img.id} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
@@ -525,7 +529,6 @@ const GalleryEventsAdmin = () => {
                   </div>
                 ))}
               </div>
-              {/* Bug 2 fix: each gallery has its own file input with locked galleryId via closure + unique id */}
               <div className="flex items-center gap-3">
                 <input
                   id={`gallery-upload-${ge.id}`}
@@ -536,7 +539,7 @@ const GalleryEventsAdmin = () => {
                   onChange={(e) => {
                     const files = e.target.files;
                     if (files) handleAddImages(ge.id, files);
-                    e.target.value = ""; // reset so same file can be re-selected
+                    e.target.value = "";
                   }}
                 />
                 <Button
@@ -557,7 +560,144 @@ const GalleryEventsAdmin = () => {
   );
 };
 
-// ---- Team Admin (with Staff Coordinators support) ----
+// ---- Publications Admin (new) ----
+const PublicationsAdmin = () => {
+  const { toast } = useToast();
+  const qc = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<any>(null);
+  const [form, setForm] = useState({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0 });
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const { data: publications = [], isLoading } = useQuery({
+    queryKey: ["admin-publications"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("publications").select("*").order("display_order", { ascending: true }).order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const resetForm = () => { setForm({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0 }); setEditing(null); setShowForm(false); };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowedTypes = ["application/pdf", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Invalid file type", description: "Only PDF and PPT/PPTX files are allowed.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Maximum file size is 20MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "pdf";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("publication-files").upload(path, file, { contentType: file.type, upsert: false });
+      if (error) throw error;
+      const { data } = supabase.storage.from("publication-files").getPublicUrl(path);
+      const fileType = ext === "pdf" ? "pdf" : "pptx";
+      setForm({ ...form, file_url: data.publicUrl, file_type: fileType });
+      toast({ title: "File uploaded successfully" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally { setUploading(false); }
+  };
+
+  const handleSave = async () => {
+    if (!form.title || !form.file_url) { toast({ title: "Title and file are required", variant: "destructive" }); return; }
+    try {
+      const payload = { title: form.title, year: form.year, description: form.description || null, file_url: form.file_url, file_type: form.file_type, display_order: form.display_order };
+      if (editing) { const { error } = await supabase.from("publications").update(payload).eq("id", editing.id); if (error) throw error; }
+      else { const { error } = await supabase.from("publications").insert(payload); if (error) throw error; }
+      qc.invalidateQueries({ queryKey: ["admin-publications"] }); qc.invalidateQueries({ queryKey: ["publications"] });
+      toast({ title: editing ? "Publication updated" : "Publication created" }); resetForm();
+    } catch { toast({ title: "Error saving publication", variant: "destructive" }); }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await supabase.from("publications").delete().eq("id", id);
+      qc.invalidateQueries({ queryKey: ["admin-publications"] }); qc.invalidateQueries({ queryKey: ["publications"] });
+      toast({ title: "Publication deleted" });
+    } catch { toast({ title: "Error deleting", variant: "destructive" }); }
+  };
+
+  const startEdit = (p: any) => {
+    setForm({ title: p.title, year: p.year, description: p.description || "", file_url: p.file_url, file_type: p.file_type || "pdf", display_order: p.display_order || 0 });
+    setEditing(p); setShowForm(true);
+  };
+
+  const movePublication = async (id: string, direction: "up" | "down") => {
+    const idx = publications.findIndex((p: any) => p.id === id);
+    if (idx < 0) return;
+    await normalizeAndPersist("publications", publications, idx, direction, "display_order", qc, ["admin-publications", "publications"]);
+    toast({ title: "Order updated" });
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-display text-xl font-bold">Publications ({publications.length})</h2>
+        <Button onClick={() => { resetForm(); setShowForm(true); }}><Plus className="h-4 w-4 mr-2" /> Add Publication</Button>
+      </div>
+      {showForm && (
+        <div className="rounded-xl border border-border p-6 mb-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="text-sm font-medium block mb-1">Title *</label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+            <div><label className="text-sm font-medium block mb-1">Year *</label><Input type="number" value={form.year} onChange={(e) => setForm({ ...form, year: parseInt(e.target.value) || new Date().getFullYear() })} /></div>
+          </div>
+          <div><label className="text-sm font-medium block mb-1">Description (optional)</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
+          <div>
+            <label className="text-sm font-medium block mb-1">File (PDF or PPTX) *</label>
+            <div className="flex items-center gap-3">
+              {form.file_url && (
+                <div className="flex items-center gap-2 text-sm text-primary">
+                  <FileText className="h-4 w-4" />
+                  <span className="truncate max-w-[200px]">{form.file_type.toUpperCase()} uploaded</span>
+                </div>
+              )}
+              <input ref={fileRef} type="file" accept=".pdf,.ppt,.pptx" className="hidden" onChange={handleFileUpload} />
+              <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileRef.current?.click()}>
+                {uploading ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><Upload className="h-3 w-3 mr-1" /> Upload File</>}
+              </Button>
+            </div>
+          </div>
+          <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
+        </div>
+      )}
+      {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
+        <div className="space-y-2">
+          {publications.map((p: any, idx: number) => (
+            <div key={p.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-0.5">
+                  <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0} onClick={() => movePublication(p.id, "up")}><ArrowUp className="h-3 w-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === publications.length - 1} onClick={() => movePublication(p.id, "down")}><ArrowDown className="h-3 w-3" /></Button>
+                </div>
+                <FileText className="h-5 w-5 text-primary" />
+                <div>
+                  <h3 className="font-medium">{p.title}</h3>
+                  <p className="text-xs text-muted-foreground">{p.year} · {p.file_type?.toUpperCase()}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="icon" variant="ghost" onClick={() => startEdit(p)}><Edit2 className="h-4 w-4" /></Button>
+                <DeleteButton onConfirm={() => handleDelete(p.id)} label={`"${p.title}"`} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ---- Team Admin ----
 const TeamAdmin = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -612,6 +752,7 @@ const TeamAdmin = () => {
     const idx = sectionMembers.findIndex((m: any) => m.id === id);
     if (idx < 0) return;
     await normalizeAndPersist("team_members", sectionMembers, idx, direction, "display_order", qc, ["admin-team", "team-members"]);
+    toast({ title: "Order updated" });
   };
 
   const roles = SECTION_ROLES[form.section] || [];
