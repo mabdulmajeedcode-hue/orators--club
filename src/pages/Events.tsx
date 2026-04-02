@@ -9,7 +9,7 @@ import { format } from "date-fns";
 
 const tabs = ["All Events", "Upcoming", "Past"];
 
-/* Bug 1.1 fix: event modal is now fully scrollable with uncropped poster */
+/* Fix 1: Two-column event modal — poster left, details right, no scrolling needed on desktop */
 const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => {
   const upcoming = event.status === "upcoming";
 
@@ -22,44 +22,39 @@ const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => 
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto py-8 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <div className="fixed inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
       <motion.div
-        className="relative z-10 w-full max-w-3xl rounded-2xl border border-border bg-card shadow-2xl overflow-hidden my-auto"
+        className="relative z-10 w-full max-w-5xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col md:flex-row"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", duration: 0.4 }}
       >
-        {/* Close button — always visible with high z-index */}
+        {/* Close button */}
         <button onClick={onClose} className="absolute top-3 right-3 z-30 rounded-full bg-background/90 p-2 text-foreground hover:bg-background transition-colors shadow-md">
           <X className="h-5 w-5" />
         </button>
 
-        {/* Poster image — full natural size, never cropped */}
+        {/* Left column — poster image */}
         {event.image && (
-          <div className="relative bg-secondary">
-            <img src={event.image} alt={event.title} className="w-full h-auto object-contain" />
-            <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-bold font-display">
-              {format(new Date(event.date), "MMM dd, yyyy")}
-            </div>
-            {!upcoming && (
-              <div className="absolute bottom-3 left-3">
-                <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1" /> Concluded</Badge>
-              </div>
-            )}
+          <div className="md:w-1/2 flex-shrink-0 bg-secondary flex items-center justify-center overflow-hidden">
+            <img src={event.image} alt={event.title} className="w-full h-full object-contain max-h-[85vh]" />
           </div>
         )}
 
-        {/* Full description — no height constraints */}
-        <div className="p-6">
-          {!event.image && (
-            <div className="mb-2 text-sm font-bold text-primary font-display">
-              {format(new Date(event.date), "MMM dd, yyyy")}
+        {/* Right column — event details, scrollable if needed */}
+        <div className={`flex-1 overflow-y-auto p-6 md:p-8 ${!event.image ? 'w-full' : ''}`}>
+          <div className="bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-bold font-display w-fit mb-4">
+            {format(new Date(event.date), "MMM dd, yyyy")}
+          </div>
+          {!upcoming && (
+            <div className="mb-3">
+              <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1" /> Concluded</Badge>
             </div>
           )}
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">{event.category}</span>
