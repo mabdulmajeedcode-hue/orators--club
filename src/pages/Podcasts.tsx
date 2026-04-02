@@ -199,28 +199,33 @@ const Podcasts = () => {
               {publications.map((pub: any, i: number) => (
                 <motion.div
                   key={pub.id}
-                  className="rounded-xl border border-border bg-background p-6 card-hover"
+                  className="rounded-xl border border-border bg-background overflow-hidden card-hover flex flex-col"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06 }}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <FileText className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-display font-semibold text-lg">{pub.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{pub.year} · {pub.file_type?.toUpperCase()}</p>
-                      {pub.description && (
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{pub.description}</p>
-                      )}
+                  {/* Cover image or placeholder */}
+                  <div className="h-48 bg-secondary flex items-center justify-center overflow-hidden">
+                    {pub.cover_image ? (
+                      <img src={pub.cover_image} alt={pub.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <FileText className="h-12 w-12 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-display font-semibold text-lg">{pub.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{pub.year} · {pub.file_type?.toUpperCase()}</p>
+                    {pub.description && (
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{pub.description}</p>
+                    )}
+                    <div className="mt-auto pt-4">
+                      <Button className="w-full" size="sm" asChild>
+                        <a href={pub.file_url} download target="_blank" rel="noopener noreferrer">
+                          <Download className="h-4 w-4 mr-2" /> Download
+                        </a>
+                      </Button>
                     </div>
                   </div>
-                  <Button className="w-full mt-4" size="sm" asChild>
-                    <a href={pub.file_url} download target="_blank" rel="noopener noreferrer">
-                      <Download className="h-4 w-4 mr-2" /> Download
-                    </a>
-                  </Button>
                 </motion.div>
               ))}
             </div>
