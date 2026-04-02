@@ -581,7 +581,7 @@ const PublicationsAdmin = () => {
     },
   });
 
-  const resetForm = () => { setForm({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0 }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0, cover_image: "" }); setEditing(null); setShowForm(false); };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
