@@ -1,0 +1,1 @@
+ALTER TABLE public.publications ADD COLUMN IF NOT EXISTS cover_image text;

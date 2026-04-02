@@ -300,6 +300,7 @@ export type Database = {
       }
       publications: {
         Row: {
+          cover_image: string | null
           created_at: string
           description: string | null
           display_order: number
@@ -310,6 +311,7 @@ export type Database = {
           year: number
         }
         Insert: {
+          cover_image?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
@@ -320,6 +322,7 @@ export type Database = {
           year: number
         }
         Update: {
+          cover_image?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
