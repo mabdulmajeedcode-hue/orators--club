@@ -566,7 +566,9 @@ const PublicationsAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0 });
+  const [form, setForm] = useState({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0, cover_image: "" });
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -579,7 +581,7 @@ const PublicationsAdmin = () => {
     },
   });
 
-  const resetForm = () => { setForm({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0 }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0, cover_image: "" }); setEditing(null); setShowForm(false); };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -611,7 +613,7 @@ const PublicationsAdmin = () => {
   const handleSave = async () => {
     if (!form.title || !form.file_url) { toast({ title: "Title and file are required", variant: "destructive" }); return; }
     try {
-      const payload = { title: form.title, year: form.year, description: form.description || null, file_url: form.file_url, file_type: form.file_type, display_order: form.display_order };
+      const payload = { title: form.title, year: form.year, description: form.description || null, file_url: form.file_url, file_type: form.file_type, display_order: form.display_order, cover_image: form.cover_image || null };
       if (editing) { const { error } = await supabase.from("publications").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("publications").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-publications"] }); qc.invalidateQueries({ queryKey: ["publications"] });
@@ -628,7 +630,7 @@ const PublicationsAdmin = () => {
   };
 
   const startEdit = (p: any) => {
-    setForm({ title: p.title, year: p.year, description: p.description || "", file_url: p.file_url, file_type: p.file_type || "pdf", display_order: p.display_order || 0 });
+    setForm({ title: p.title, year: p.year, description: p.description || "", file_url: p.file_url, file_type: p.file_type || "pdf", display_order: p.display_order || 0, cover_image: p.cover_image || "" });
     setEditing(p); setShowForm(true);
   };
 
@@ -665,6 +667,31 @@ const PublicationsAdmin = () => {
               <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileRef.current?.click()}>
                 {uploading ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><Upload className="h-3 w-3 mr-1" /> Upload File</>}
               </Button>
+            </div>
+          </div>
+          {/* Cover image upload */}
+          <div>
+            <label className="text-sm font-medium block mb-1">Cover Image (optional)</label>
+            <div className="flex items-center gap-3">
+              {form.cover_image && (
+                <img src={form.cover_image} alt="Cover" className="h-16 w-16 rounded object-cover border border-border" />
+              )}
+              <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (!file.type.startsWith("image/")) { toast({ title: "Invalid file type", description: "Only images allowed.", variant: "destructive" }); return; }
+                setUploadingCover(true);
+                try {
+                  const url = await uploadImage("publication-files", file);
+                  setForm(prev => ({ ...prev, cover_image: url }));
+                  toast({ title: "Cover image uploaded" });
+                } catch (err: any) { toast({ title: "Upload failed", description: err.message, variant: "destructive" }); }
+                finally { setUploadingCover(false); }
+              }} />
+              <Button type="button" variant="outline" size="sm" disabled={uploadingCover} onClick={() => coverRef.current?.click()}>
+                {uploadingCover ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><ImageIcon className="h-3 w-3 mr-1" /> Upload Cover</>}
+              </Button>
+              {form.cover_image && <Button type="button" variant="ghost" size="sm" onClick={() => setForm(prev => ({ ...prev, cover_image: "" }))}>Remove</Button>}
             </div>
           </div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
