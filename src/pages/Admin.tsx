@@ -682,7 +682,7 @@ const PublicationsAdmin = () => {
                 if (!file.type.startsWith("image/")) { toast({ title: "Invalid file type", description: "Only images allowed.", variant: "destructive" }); return; }
                 setUploadingCover(true);
                 try {
-                  const url = await uploadImage(file, "publication-files");
+                  const url = await uploadImage("publication-files", file);
                   setForm(prev => ({ ...prev, cover_image: url }));
                   toast({ title: "Cover image uploaded" });
                 } catch (err: any) { toast({ title: "Upload failed", description: err.message, variant: "destructive" }); }
