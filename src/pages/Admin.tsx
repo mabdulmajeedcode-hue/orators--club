@@ -630,7 +630,7 @@ const PublicationsAdmin = () => {
   };
 
   const startEdit = (p: any) => {
-    setForm({ title: p.title, year: p.year, description: p.description || "", file_url: p.file_url, file_type: p.file_type || "pdf", display_order: p.display_order || 0 });
+    setForm({ title: p.title, year: p.year, description: p.description || "", file_url: p.file_url, file_type: p.file_type || "pdf", display_order: p.display_order || 0, cover_image: p.cover_image || "" });
     setEditing(p); setShowForm(true);
   };
 
