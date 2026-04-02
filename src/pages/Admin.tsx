@@ -566,7 +566,9 @@ const PublicationsAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0 });
+  const [form, setForm] = useState({ title: "", year: new Date().getFullYear(), description: "", file_url: "", file_type: "pdf", display_order: 0, cover_image: "" });
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
