@@ -669,6 +669,31 @@ const PublicationsAdmin = () => {
               </Button>
             </div>
           </div>
+          {/* Cover image upload */}
+          <div>
+            <label className="text-sm font-medium block mb-1">Cover Image (optional)</label>
+            <div className="flex items-center gap-3">
+              {form.cover_image && (
+                <img src={form.cover_image} alt="Cover" className="h-16 w-16 rounded object-cover border border-border" />
+              )}
+              <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (!file.type.startsWith("image/")) { toast({ title: "Invalid file type", description: "Only images allowed.", variant: "destructive" }); return; }
+                setUploadingCover(true);
+                try {
+                  const url = await uploadImage(file, "publication-files");
+                  setForm(prev => ({ ...prev, cover_image: url }));
+                  toast({ title: "Cover image uploaded" });
+                } catch (err: any) { toast({ title: "Upload failed", description: err.message, variant: "destructive" }); }
+                finally { setUploadingCover(false); }
+              }} />
+              <Button type="button" variant="outline" size="sm" disabled={uploadingCover} onClick={() => coverRef.current?.click()}>
+                {uploadingCover ? <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Uploading...</> : <><ImageIcon className="h-3 w-3 mr-1" /> Upload Cover</>}
+              </Button>
+              {form.cover_image && <Button type="button" variant="ghost" size="sm" onClick={() => setForm(prev => ({ ...prev, cover_image: "" }))}>Remove</Button>}
+            </div>
+          </div>
           <div className="flex gap-2"><Button onClick={handleSave}>{editing ? "Update" : "Create"}</Button><Button variant="outline" onClick={resetForm}>Cancel</Button></div>
         </div>
       )}
