@@ -613,7 +613,7 @@ const PublicationsAdmin = () => {
   const handleSave = async () => {
     if (!form.title || !form.file_url) { toast({ title: "Title and file are required", variant: "destructive" }); return; }
     try {
-      const payload = { title: form.title, year: form.year, description: form.description || null, file_url: form.file_url, file_type: form.file_type, display_order: form.display_order };
+      const payload = { title: form.title, year: form.year, description: form.description || null, file_url: form.file_url, file_type: form.file_type, display_order: form.display_order, cover_image: form.cover_image || null };
       if (editing) { const { error } = await supabase.from("publications").update(payload).eq("id", editing.id); if (error) throw error; }
       else { const { error } = await supabase.from("publications").insert(payload); if (error) throw error; }
       qc.invalidateQueries({ queryKey: ["admin-publications"] }); qc.invalidateQueries({ queryKey: ["publications"] });
