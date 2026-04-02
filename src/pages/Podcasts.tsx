@@ -152,7 +152,7 @@ const Podcasts = () => {
         <div className="container">
           <div className="mb-12">
             <h1 className="section-heading text-4xl md:text-5xl">
-              Club <span className="gradient-text">Voices</span>
+              Club <span className="gradient-text">Content</span>
             </h1>
             <p className="text-muted-foreground mt-2">Listen to the latest debates, speeches, and interviews.</p>
           </div>
