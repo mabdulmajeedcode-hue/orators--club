@@ -212,7 +212,7 @@ const Index = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" variant="secondary" asChild>
-              <Link to="/join">Apply for Membership</Link>
+              <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Apply for Membership</a>
             </Button>
             <Button size="lg" variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/10" asChild>
               <Link to="/contact">Contact Us</Link>

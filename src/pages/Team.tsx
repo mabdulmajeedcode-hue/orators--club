@@ -173,12 +173,12 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Staff Coordinators */}
+      {/* Faculty Coordinators */}
       {staffCoordinators.length > 0 && (
         <section className="py-16">
           <div className="container">
             <div className="mb-8">
-              <h2 className="font-display text-2xl font-bold">Staff Coordinators</h2>
+              <h2 className="font-display text-2xl font-bold">Faculty Coordinators</h2>
               <div className="w-16 h-0.5 bg-primary mt-2" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
