@@ -64,11 +64,9 @@ const Index = () => {
         <div className="container relative z-10 text-center py-32">
           {/* Lines 1-5: Institutional text */}
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="mb-4">
-            <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">Muffakham Jah College of Engineering and Technology</p>
-            <p className="text-xs md:text-sm text-muted-foreground">(Sultan-Ul-Uloom Education Society)</p>
-            <p className="text-xs md:text-sm text-muted-foreground">An Autonomous Institution</p>
-            <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Approved by AICTE, Affiliated to Osmania University</p>
-            <p className="text-[10px] md:text-xs text-muted-foreground">Accredited by NAAC with A+ and NBA</p>
+            {/* Institutional name — visible in both light and dark modes */}
+            <p className="text-xs md:text-sm uppercase tracking-widest text-white dark:text-white [.light_&]:text-foreground font-medium">Muffakham Jah College of Engineering and Technology</p>
+            <p className="text-xs md:text-sm text-white/80 dark:text-white/80 [.light_&]:text-foreground/70">(Sultan-Ul-Uloom Education Society)</p>
           </motion.div>
 
           {/* Line 6: Club name — dominant heading */}
@@ -81,8 +79,9 @@ const Index = () => {
           </motion.h1>
 
           {/* Line 7: Sub-heading */}
+          {/* Flagship line — slightly darker text in light mode for readability */}
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={2}>
-            <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
+            <span className="section-badge mb-6 inline-block [.light_&]:text-primary [.light_&]:border-primary/60">A Flagship of the Department of English, MJCET</span>
           </motion.div>
 
           {/* Tagline */}

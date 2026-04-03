@@ -19,16 +19,64 @@ const Gallery = () => {
     },
   });
 
-  // Extract unique years and sort descending; null years go at end
   const years = Array.from(new Set(galleryEvents.map((ge: any) => ge.year).filter(Boolean))).sort((a: number, b: number) => b - a);
   const [activeYear, setActiveYear] = useState<number | "all">("all");
 
-  // Default to most recent year when data loads
-  const effectiveYear = activeYear === "all" && years.length > 0 ? years[0] : activeYear;
-
-  const filtered = effectiveYear === "all"
+  /* "All Years" truly means all — no defaulting to a specific year */
+  const filtered = activeYear === "all"
     ? galleryEvents
-    : galleryEvents.filter((ge: any) => ge.year === effectiveYear);
+    : galleryEvents.filter((ge: any) => ge.year === activeYear);
+
+  /* Group filtered items by year descending for the "All Years" grouped view */
+  const groupedByYear: { year: number | null; items: any[] }[] = [];
+  if (activeYear === "all") {
+    const map = new Map<number | null, any[]>();
+    for (const ge of filtered) {
+      const y = ge.year ?? null;
+      if (!map.has(y)) map.set(y, []);
+      map.get(y)!.push(ge);
+    }
+    // Sort year keys descending; null goes last
+    const sortedKeys = Array.from(map.keys()).sort((a, b) => {
+      if (a === null) return 1;
+      if (b === null) return -1;
+      return b - a;
+    });
+    for (const k of sortedKeys) {
+      groupedByYear.push({ year: k, items: map.get(k)! });
+    }
+  }
+
+  const GalleryCard = ({ ge, i }: { ge: any; i: number }) => (
+    <motion.div
+      key={ge.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: i * 0.06 }}
+    >
+      <Link to={`/gallery/${ge.id}`} className="block">
+        <div className="rounded-xl border border-border bg-card overflow-hidden group card-hover">
+          <div className="aspect-video overflow-hidden bg-secondary">
+            {ge.cover_image ? (
+              <img src={ge.cover_image} alt={ge.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <ImageIcon className="h-12 w-12 text-muted-foreground" />
+              </div>
+            )}
+          </div>
+          <div className="p-4">
+            <h3 className="font-display font-semibold text-lg">{ge.title}</h3>
+            {ge.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{ge.description}</p>}
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-primary">{ge.gallery_event_images?.length || 0} photos</p>
+              {ge.year && <p className="text-xs text-muted-foreground">{ge.year}</p>}
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
 
   return (
     <div className="min-h-screen pt-16">
@@ -41,7 +89,7 @@ const Gallery = () => {
             </h1>
           </div>
 
-          {/* Year-wise filter tabs */}
+          {/* Year filter tabs — "All Years" has no year highlighted */}
           {years.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2 mb-10">
               <button
@@ -59,7 +107,7 @@ const Gallery = () => {
                   key={y}
                   onClick={() => setActiveYear(y as number)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
-                    effectiveYear === y
+                    activeYear === y
                       ? "bg-primary text-primary-foreground border-primary"
                       : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
                   }`}
@@ -76,37 +124,26 @@ const Gallery = () => {
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-center text-muted-foreground py-20">No gallery items yet.</p>
+          ) : activeYear === "all" ? (
+            /* Grouped by year view */
+            <div className="space-y-16">
+              {groupedByYear.map((group) => (
+                <div key={group.year ?? "none"}>
+                  <h2 className="font-display text-2xl font-bold mb-2">{group.year ?? "Other"}</h2>
+                  <div className="w-12 h-0.5 bg-primary mb-6" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {group.items.map((ge: any, i: number) => (
+                      <GalleryCard key={ge.id} ge={ge} i={i} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
+            /* Single year flat grid */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((ge: any, i: number) => (
-                <motion.div
-                  key={ge.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                >
-                  <Link to={`/gallery/${ge.id}`} className="block">
-                    <div className="rounded-xl border border-border bg-card overflow-hidden group card-hover">
-                      <div className="aspect-video overflow-hidden bg-secondary">
-                        {ge.cover_image ? (
-                          <img src={ge.cover_image} alt={ge.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-display font-semibold text-lg">{ge.title}</h3>
-                        {ge.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{ge.description}</p>}
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-xs text-primary">{ge.gallery_event_images?.length || 0} photos</p>
-                          {ge.year && <p className="text-xs text-muted-foreground">{ge.year}</p>}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
+                <GalleryCard key={ge.id} ge={ge} i={i} />
               ))}
             </div>
           )}

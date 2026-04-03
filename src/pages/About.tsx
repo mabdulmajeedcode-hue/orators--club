@@ -55,7 +55,6 @@ const credentials = [
   "Approved by AICTE",
 ];
 
-/* Reusable section heading matching site-wide pattern */
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <div className="mb-10">
     <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">{children}</h2>
@@ -74,7 +73,6 @@ const About = () => {
         </div>
         <div className="container relative z-10 text-center">
           <span className="section-badge mb-4 inline-block">About Us</span>
-          {/* Heading made larger and more impactful */}
           <h1 className="section-heading text-6xl md:text-8xl lg:text-9xl mb-4">
             The <span className="gradient-text">Orators'</span> Club
           </h1>
@@ -84,13 +82,12 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── About the Club — two-column layout ── */}
+      {/* 1. About the Club */}
       <section className="py-20">
         <div className="container max-w-6xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <SectionHeading>About the <span className="gradient-text">Club</span></SectionHeading>
             <div className="grid md:grid-cols-5 gap-10 items-start">
-              {/* Left: text (3 cols) */}
               <div className="md:col-span-3 space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
                 <p>
                   Orators' Club was founded in 2003 under the Department of English at Muffakham Jah College of Engineering and Technology (MJCET), part of the Sultan-Ul-Uloom Education Society. An autonomous institution accredited by NAAC with A+ and NBA, affiliated to Osmania University and approved by AICTE, MJCET is one of Hyderabad's most respected engineering colleges.
@@ -99,7 +96,6 @@ const About = () => {
                   After a revival in 2009, the club has grown into one of the most active student organisations on campus — bridging the gap between technical education and communication excellence. What began as a small initiative has blossomed into a vibrant community of thinkers, speakers, and future leaders.
                 </p>
               </div>
-              {/* Right: credentials card (2 cols) */}
               <div className="md:col-span-2">
                 <div className="rounded-xl border border-border bg-card p-6 border-l-4 border-l-primary">
                   <h3 className="font-display font-semibold text-lg mb-4 text-foreground">Credentials</h3>
@@ -118,18 +114,37 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── Our History — vertical timeline ── */}
-      <section className="py-24 bg-card">
+      {/* 2. Department of English — moved up per reorder */}
+      <section className="py-20 bg-card">
+        <div className="container max-w-6xl">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+            <SectionHeading>About the <span className="gradient-text">Department of English</span></SectionHeading>
+            <div className="grid md:grid-cols-2 gap-10 items-center">
+              <div className="rounded-xl border border-border bg-secondary/30 aspect-[4/3] flex items-center justify-center">
+                <span className="text-muted-foreground text-sm italic">Add Department photo here</span>
+              </div>
+              <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
+                <p>
+                  The Department of English at MJCET is committed to developing well-rounded graduates. With experienced and widely published faculty, the department focuses not only on language proficiency but on inspiring students to lead ethical, fulfilling lives with strong personal accountability.
+                </p>
+                <p>
+                  Faculty members actively mentor students through the Orators' Club and have contributed significantly to research and academic publications, making the department a cornerstone of holistic education at MJCET.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 3. Our History — vertical timeline */}
+      <section className="py-24">
         <div className="container max-w-4xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <SectionHeading>Our <span className="gradient-text">History</span></SectionHeading>
           </motion.div>
           <div className="relative mt-12">
-            {/* Centre line */}
             <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 hidden md:block" />
-            {/* Mobile line on left */}
             <div className="absolute left-4 top-0 bottom-0 w-px bg-border md:hidden" />
-
             <div className="space-y-12 md:space-y-16">
               {timelineData.map((item, i) => {
                 const isLeft = i % 2 === 0;
@@ -142,7 +157,6 @@ const About = () => {
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="relative"
                   >
-                    {/* Desktop layout: alternating left/right */}
                     <div className="hidden md:grid md:grid-cols-2 gap-8 items-center">
                       {isLeft ? (
                         <>
@@ -162,10 +176,7 @@ const About = () => {
                         </>
                       )}
                     </div>
-                    {/* Centre dot (desktop) */}
                     <div className="hidden md:block absolute left-1/2 top-2 -translate-x-1/2 w-4 h-4 rounded-full bg-primary border-4 border-background" />
-
-                    {/* Mobile layout: single column with left dot */}
                     <div className="md:hidden pl-12 relative">
                       <div className="absolute left-2.5 top-1.5 w-3 h-3 rounded-full bg-primary border-[3px] border-background" />
                       <span className="font-display text-xl font-bold text-primary">{item.year}</span>
@@ -179,8 +190,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── What We Do — 3x2 grid ── */}
-      <section className="py-20">
+      {/* 4. What We Do */}
+      <section className="py-20 bg-card">
         <div className="container max-w-6xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <SectionHeading>What We <span className="gradient-text">Do</span></SectionHeading>
@@ -189,7 +200,7 @@ const About = () => {
               {whatWeDoCards.map((card) => {
                 const Icon = card.icon;
                 return (
-                  <div key={card.title} className="p-6 rounded-xl border border-border bg-card border-t-4 border-t-primary flex flex-col">
+                  <div key={card.title} className="p-6 rounded-xl border border-border bg-background border-t-4 border-t-primary flex flex-col">
                     <Icon className="h-8 w-8 text-primary mb-4" />
                     <h3 className="font-display font-semibold text-foreground mb-2">{card.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
@@ -201,14 +212,14 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── Flagship Programmes — four horizontal cards ── */}
-      <section className="py-20 bg-card">
+      {/* 5. Flagship Programmes */}
+      <section className="py-20">
         <div className="container max-w-6xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <SectionHeading>Flagship <span className="gradient-text">Programmes</span></SectionHeading>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {flagshipCards.map((card) => (
-                <div key={card.name} className="p-6 rounded-xl border border-border bg-background border-l-4 border-l-primary flex flex-col">
+                <div key={card.name} className="p-6 rounded-xl border border-border bg-card border-l-4 border-l-primary flex flex-col">
                   <h3 className="font-display font-bold text-lg text-foreground mb-2">{card.name}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
                 </div>
@@ -218,7 +229,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── Publications & Achievements — accent background section ── */}
+      {/* 6. Publications & Achievements */}
       <section className="py-20 bg-primary/10">
         <div className="container max-w-6xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
@@ -239,38 +250,14 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── Department of English — reversed two-column ── */}
+      {/* 7. Sub-Chapters */}
       <section className="py-20 bg-card">
-        <div className="container max-w-6xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            <SectionHeading>About the <span className="gradient-text">Department of English</span></SectionHeading>
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              {/* Left: image placeholder */}
-              <div className="rounded-xl border border-border bg-secondary/30 aspect-[4/3] flex items-center justify-center">
-                <span className="text-muted-foreground text-sm italic">Add Department photo here</span>
-              </div>
-              {/* Right: text */}
-              <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
-                <p>
-                  The Department of English at MJCET is committed to developing well-rounded graduates. With experienced and widely published faculty, the department focuses not only on language proficiency but on inspiring students to lead ethical, fulfilling lives with strong personal accountability.
-                </p>
-                <p>
-                  Faculty members actively mentor students through the Orators' Club and have contributed significantly to research and academic publications, making the department a cornerstone of holistic education at MJCET.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Sub-Chapters — three equal cards ── */}
-      <section className="py-20">
         <div className="container max-w-6xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <SectionHeading>Sub-<span className="gradient-text">Chapters</span></SectionHeading>
             <div className="grid md:grid-cols-3 gap-6">
               {subChapters.map((ch) => (
-                <div key={ch.name} className="p-6 rounded-xl border border-border bg-card border-t-4 border-t-primary">
+                <div key={ch.name} className="p-6 rounded-xl border border-border bg-background border-t-4 border-t-primary">
                   <h3 className="font-display font-semibold text-lg mb-3 text-foreground">{ch.name}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{ch.desc}</p>
                 </div>
