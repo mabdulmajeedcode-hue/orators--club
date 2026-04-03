@@ -26,7 +26,7 @@ const LinkedInIcon = ({ url }: { url?: string | null }) => {
   );
 };
 
-// Staff Coordinators — same style as Governing Body but without role label
+// Faculty Coordinators — same style as Governing Body but without role label
 const StaffCoordinatorCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
     className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
@@ -149,7 +149,7 @@ const Team = () => {
     },
   });
 
-  const staffCoordinators = members.filter((m: any) => m.section === "Staff Coordinators");
+  const facultyCoordinators = members.filter((m: any) => m.section === "Staff Coordinators");
   const governing = members.filter((m: any) => m.section === "Governing Body");
   const execom = members.filter((m: any) => m.section === "Execom");
   const core = members.filter((m: any) => m.section === "Core");
@@ -173,16 +173,16 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Staff Coordinators */}
-      {staffCoordinators.length > 0 && (
+      {/* Faculty Coordinators */}
+      {facultyCoordinators.length > 0 && (
         <section className="py-16">
           <div className="container">
             <div className="mb-8">
-              <h2 className="font-display text-2xl font-bold">Staff Coordinators</h2>
+              <h2 className="font-display text-2xl font-bold">Faculty Coordinators</h2>
               <div className="w-16 h-0.5 bg-primary mt-2" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {staffCoordinators.map((m: any, i: number) => (
+              {facultyCoordinators.map((m: any, i: number) => (
                 <StaffCoordinatorCard key={m.id} member={m} i={i} />
               ))}
             </div>

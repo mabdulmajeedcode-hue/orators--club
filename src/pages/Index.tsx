@@ -97,7 +97,7 @@ const Index = () => {
             initial="hidden" animate="visible" variants={fadeUp} custom={4}
           >
             <Button size="lg" asChild>
-              <Link to="/join">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></a>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link to="/events">Explore Events</Link>
@@ -212,7 +212,7 @@ const Index = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" variant="secondary" asChild>
-              <Link to="/join">Apply for Membership</Link>
+              <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Apply for Membership</a>
             </Button>
             <Button size="lg" variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/10" asChild>
               <Link to="/contact">Contact Us</Link>

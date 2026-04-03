@@ -33,7 +33,7 @@ const Footer = () => {
             <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-              <li><Link to="/join" className="hover:text-primary transition-colors">Membership</Link></li>
+              <li><a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Membership</a></li>
               <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
             </ul>
           </div>

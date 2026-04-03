@@ -42,8 +42,8 @@ const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => 
 
         {/* Left column — poster image, object-contain so full poster is always visible */}
         {event.image && (
-          <div className="md:w-1/2 flex-shrink-0 bg-secondary flex items-center justify-center p-2">
-            <img src={event.image} alt={event.title} className="max-w-full max-h-[85vh] object-contain" />
+          <div className="md:w-1/2 flex-shrink-0 bg-secondary flex items-center justify-center p-4 max-h-[80vh]">
+            <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
           </div>
         )}
 
