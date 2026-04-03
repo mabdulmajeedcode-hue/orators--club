@@ -23,7 +23,7 @@ import {
 const ADMIN_PASSWORD = "orators2025";
 
 const SECTION_ROLES: Record<string, string[]> = {
-  "Staff Coordinators": [],
+  "Faculty Coordinators": [],
   "Governing Body": ["Chief Coordinator", "Chief Representative", "Chief Strategist", "General Secretary"],
   Execom: ["PR Execom", "HR Execom", "Operations Execom", "Media & Editing Execom", "Technical Execom", "Research Execom", "Documentation Execom", "Marketing Execom"],
   Core: ["PR Core", "HR Core", "Operations Core", "Media & Editing Core", "Technical Core", "Research Core", "Documentation Core", "Marketing Core"],
@@ -730,25 +730,25 @@ const TeamAdmin = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ name: "", section: "Staff Coordinators", role: "", image_url: "", department: "", linkedin_url: "", display_order: 0 });
+  const [form, setForm] = useState({ name: "", section: "Faculty Coordinators", role: "", image_url: "", department: "", linkedin_url: "", display_order: 0 });
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["admin-team"],
     queryFn: async () => { const { data, error } = await supabase.from("team_members").select("*").order("display_order", { ascending: true }).order("created_at"); if (error) throw error; return data; },
   });
 
-  const resetForm = () => { setForm({ name: "", section: "Staff Coordinators", role: "", image_url: "", department: "", linkedin_url: "", display_order: 0 }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ name: "", section: "Faculty Coordinators", role: "", image_url: "", department: "", linkedin_url: "", display_order: 0 }); setEditing(null); setShowForm(false); };
 
   const handleSectionChange = (section: string) => {
     const roles = SECTION_ROLES[section] || [];
-    setForm({ ...form, section, role: section === "Staff Coordinators" ? "Staff Coordinator" : (roles[0] || "") });
+    setForm({ ...form, section, role: section === "Faculty Coordinators" ? "Faculty Coordinator" : (roles[0] || "") });
   };
 
   const handleSave = async () => {
     if (!form.name) { toast({ title: "Name is required", variant: "destructive" }); return; }
-    const isStaffCoord = form.section === "Staff Coordinators";
-    const role = isStaffCoord ? "Staff Coordinator" : form.role;
-    if (!isStaffCoord && !role) { toast({ title: "Role is required", variant: "destructive" }); return; }
+    const isFacultyCoord = form.section === "Faculty Coordinators";
+    const role = isFacultyCoord ? "Faculty Coordinator" : form.role;
+    if (!isFacultyCoord && !role) { toast({ title: "Role is required", variant: "destructive" }); return; }
     if (form.linkedin_url && !form.linkedin_url.startsWith("http")) { toast({ title: "LinkedIn URL must start with http", variant: "destructive" }); return; }
     const dept = (form.section === "Core" || form.section === "Execom") ? roleToDepartment(role) : null;
     try {
@@ -783,7 +783,7 @@ const TeamAdmin = () => {
   };
 
   const roles = SECTION_ROLES[form.section] || [];
-  const isStaffCoord = form.section === "Staff Coordinators";
+  const isFacultyCoord = form.section === "Faculty Coordinators";
 
   return (
     <div>
@@ -800,7 +800,7 @@ const TeamAdmin = () => {
                 {Object.keys(SECTION_ROLES).map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
-            {!isStaffCoord && (
+            {!isFacultyCoord && (
               <div><label className="text-sm font-medium block mb-1">Role *</label>
                 <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
                   {roles.map((r) => <option key={r}>{r}</option>)}
@@ -815,7 +815,7 @@ const TeamAdmin = () => {
       )}
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
         <div className="space-y-2">
-          {["Staff Coordinators", "Governing Body", "Execom", "Core"].map((section) => {
+          {["Faculty Coordinators", "Governing Body", "Execom", "Core"].map((section) => {
             const sectionMembers = members.filter((m: any) => m.section === section);
             if (sectionMembers.length === 0) return null;
             return (
@@ -833,7 +833,7 @@ const TeamAdmin = () => {
                         <div>
                           <h4 className="font-medium text-sm">{m.name}</h4>
                           <p className="text-xs text-muted-foreground">
-                            {section !== "Staff Coordinators" && m.role}
+                            {section !== "Faculty Coordinators" && m.role}
                             {m.department ? ` · ${m.department}` : ""}
                             {m.linkedin_url ? " · 🔗" : ""}
                           </p>
