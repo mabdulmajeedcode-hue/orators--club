@@ -149,7 +149,7 @@ const Team = () => {
     },
   });
 
-  const staffCoordinators = members.filter((m: any) => m.section === "Staff Coordinators");
+  const facultyCoordinators = members.filter((m: any) => m.section === "Staff Coordinators");
   const governing = members.filter((m: any) => m.section === "Governing Body");
   const execom = members.filter((m: any) => m.section === "Execom");
   const core = members.filter((m: any) => m.section === "Core");
@@ -174,7 +174,7 @@ const Team = () => {
       </section>
 
       {/* Faculty Coordinators */}
-      {staffCoordinators.length > 0 && (
+      {facultyCoordinators.length > 0 && (
         <section className="py-16">
           <div className="container">
             <div className="mb-8">
@@ -182,7 +182,7 @@ const Team = () => {
               <div className="w-16 h-0.5 bg-primary mt-2" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {staffCoordinators.map((m: any, i: number) => (
+              {facultyCoordinators.map((m: any, i: number) => (
                 <StaffCoordinatorCard key={m.id} member={m} i={i} />
               ))}
             </div>
