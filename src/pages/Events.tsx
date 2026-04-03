@@ -40,10 +40,10 @@ const EventModal = ({ event, onClose }: { event: any; onClose: () => void }) => 
           <X className="h-5 w-5" />
         </button>
 
-        {/* Left column — poster image */}
+        {/* Left column — poster image, object-contain so full poster is always visible */}
         {event.image && (
-          <div className="md:w-1/2 flex-shrink-0 bg-secondary flex items-center justify-center overflow-hidden">
-            <img src={event.image} alt={event.title} className="w-full h-full object-contain max-h-[85vh]" />
+          <div className="md:w-1/2 flex-shrink-0 bg-secondary flex items-center justify-center p-2">
+            <img src={event.image} alt={event.title} className="max-w-full max-h-[85vh] object-contain" />
           </div>
         )}
 
