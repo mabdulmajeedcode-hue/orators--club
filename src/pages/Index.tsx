@@ -79,8 +79,9 @@ const Index = () => {
           </motion.h1>
 
           {/* Line 7: Sub-heading */}
+          {/* Flagship line — slightly darker text in light mode for readability */}
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={2}>
-            <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
+            <span className="section-badge mb-6 inline-block [.light_&]:text-primary [.light_&]:border-primary/60">A Flagship of the Department of English, MJCET</span>
           </motion.div>
 
           {/* Tagline */}
