@@ -59,7 +59,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-2">
           <ThemeToggle />
           <Button asChild size="sm">
-            <Link to="/join">Join Now</Link>
+            <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join Now</a>
           </Button>
         </div>
 
