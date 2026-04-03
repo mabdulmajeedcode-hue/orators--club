@@ -26,7 +26,7 @@ const LinkedInIcon = ({ url }: { url?: string | null }) => {
   );
 };
 
-// Staff Coordinators — same style as Governing Body but without role label
+// Faculty Coordinators — same style as Governing Body but without role label
 const StaffCoordinatorCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
     className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
