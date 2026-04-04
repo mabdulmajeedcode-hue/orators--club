@@ -11,7 +11,7 @@ export async function uploadImage(
     throw new Error("Only JPEG, PNG, and WebP images are allowed.");
   }
   if (file.size > MAX_SIZE) {
-    throw new Error("Image must be under 5MB.");
+    throw new Error("Image must be under 10MB.");
   }
 
   const ext = file.name.split(".").pop();
