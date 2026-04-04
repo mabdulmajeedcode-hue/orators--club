@@ -117,6 +117,7 @@ const PodcastCard = ({ ep, i, onSelect }: { ep: any; i: number; onSelect: () => 
 
 const Podcasts = () => {
   const [selectedPodcast, setSelectedPodcast] = useState<any>(null);
+  const [viewingPub, setViewingPub] = useState<any>(null);
 
   const { data: podcasts = [], isLoading } = useQuery({
     queryKey: ["podcasts"],
