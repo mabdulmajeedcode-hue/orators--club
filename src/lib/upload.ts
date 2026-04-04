@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function uploadImage(
   bucket: string,
