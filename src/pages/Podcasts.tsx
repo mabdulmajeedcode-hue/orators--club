@@ -285,7 +285,7 @@ const Podcasts = () => {
               )}
             </AnimatePresence>
           </>
-          )
+          )}
         </div>
       </section>
     </div>
