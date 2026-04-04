@@ -273,11 +273,24 @@ const Podcasts = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 relative">
+                      {!pdfLoaded && !pdfError && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                          <span className="ml-3 text-muted-foreground">Loading PDF...</span>
+                        </div>
+                      )}
+                      {pdfError && (
+                        <div className="absolute inset-0 flex items-center justify-center text-center p-6">
+                          <p className="text-muted-foreground">Unable to preview this PDF. Please use the Download button above.</p>
+                        </div>
+                      )}
                       <iframe
-                        src={viewingPub.file_url}
-                        className="w-full h-full border-0"
+                        src={`https://docs.google.com/viewer?url=${encodeURIComponent(viewingPub.file_url)}&embedded=true`}
+                        className={`w-full h-full border-0 ${pdfLoaded ? '' : 'opacity-0'}`}
                         title={viewingPub.title}
+                        onLoad={() => setPdfLoaded(true)}
+                        onError={() => setPdfError(true)}
                       />
                     </div>
                   </motion.div>
