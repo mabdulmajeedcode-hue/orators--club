@@ -33,7 +33,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2 font-display font-bold text-xl">
           <img
-            src={isLight ? logoLight : logoDark}
+            src={logo}
             alt="Orators' Club Logo"
             className="h-12 w-auto" />
 
