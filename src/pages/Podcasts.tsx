@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Loader2, ExternalLink, X, Download, FileText, Image as ImageIcon } from "lucide-react";
+import { Play, Loader2, ExternalLink, X, Download, FileText, Image as ImageIcon, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -117,6 +117,7 @@ const PodcastCard = ({ ep, i, onSelect }: { ep: any; i: number; onSelect: () => 
 
 const Podcasts = () => {
   const [selectedPodcast, setSelectedPodcast] = useState<any>(null);
+  const [viewingPub, setViewingPub] = useState<any>(null);
 
   const { data: podcasts = [], isLoading } = useQuery({
     queryKey: ["podcasts"],
@@ -195,16 +196,17 @@ const Podcasts = () => {
           ) : publications.length === 0 ? (
             <p className="text-center text-muted-foreground py-12">No publications yet. Stay tuned!</p>
           ) : (
+          <>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {publications.map((pub: any, i: number) => (
                 <motion.div
                   key={pub.id}
-                  className="rounded-xl border border-border bg-background overflow-hidden card-hover flex flex-col"
+                  className="rounded-xl border border-border bg-background overflow-hidden card-hover flex flex-col cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06 }}
+                  onClick={() => pub.file_type === "pdf" && setViewingPub(pub)}
                 >
-                  {/* Cover image or placeholder */}
                   <div className="h-48 bg-secondary flex items-center justify-center overflow-hidden">
                     {pub.cover_image ? (
                       <img src={pub.cover_image} alt={pub.title} className="w-full h-full object-cover" />
@@ -219,16 +221,70 @@ const Podcasts = () => {
                       <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{pub.description}</p>
                     )}
                     <div className="mt-auto pt-4">
-                      <Button className="w-full" size="sm" asChild>
-                        <a href={pub.file_url} download target="_blank" rel="noopener noreferrer">
-                          <Download className="h-4 w-4 mr-2" /> Download
-                        </a>
-                      </Button>
+                      {pub.file_type === "pdf" ? (
+                        <Button className="w-full" size="sm" onClick={(e) => { e.stopPropagation(); setViewingPub(pub); }}>
+                          <Eye className="h-4 w-4 mr-2" /> View PDF
+                        </Button>
+                      ) : (
+                        <Button className="w-full" size="sm" asChild>
+                          <a href={pub.file_url} download target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4 mr-2" /> Download
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
+
+            <AnimatePresence>
+              {viewingPub && (
+                <motion.div
+                  className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setViewingPub(null)} />
+                  <motion.div
+                    className="relative z-10 w-full max-w-5xl h-[90vh] rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col"
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    transition={{ type: "spring", duration: 0.3 }}
+                  >
+                    <div className="flex items-center justify-between p-4 border-b border-border">
+                      <div>
+                        <h3 className="font-display font-semibold text-lg">{viewingPub.title}</h3>
+                        <p className="text-xs text-muted-foreground">{viewingPub.year} · PDF</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={viewingPub.file_url} download target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4 mr-2" /> Download
+                          </a>
+                        </Button>
+                        <button
+                          onClick={() => setViewingPub(null)}
+                          className="rounded-full p-2 hover:bg-secondary transition-colors"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <iframe
+                        src={viewingPub.file_url}
+                        className="w-full h-full border-0"
+                        title={viewingPub.title}
+                      />
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
           )}
         </div>
       </section>
