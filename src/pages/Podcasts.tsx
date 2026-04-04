@@ -196,6 +196,7 @@ const Podcasts = () => {
           ) : publications.length === 0 ? (
             <p className="text-center text-muted-foreground py-12">No publications yet. Stay tuned!</p>
           ) : (
+          <>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {publications.map((pub: any, i: number) => (
                 <motion.div
@@ -206,7 +207,6 @@ const Podcasts = () => {
                   transition={{ delay: i * 0.06 }}
                   onClick={() => pub.file_type === "pdf" && setViewingPub(pub)}
                 >
-                  {/* Cover image or placeholder */}
                   <div className="h-48 bg-secondary flex items-center justify-center overflow-hidden">
                     {pub.cover_image ? (
                       <img src={pub.cover_image} alt={pub.title} className="w-full h-full object-cover" />
@@ -238,7 +238,6 @@ const Podcasts = () => {
               ))}
             </div>
 
-            {/* PDF Viewer Modal */}
             <AnimatePresence>
               {viewingPub && (
                 <motion.div
@@ -255,7 +254,6 @@ const Podcasts = () => {
                     exit={{ scale: 0.95, opacity: 0 }}
                     transition={{ type: "spring", duration: 0.3 }}
                   >
-                    {/* Modal Header */}
                     <div className="flex items-center justify-between p-4 border-b border-border">
                       <div>
                         <h3 className="font-display font-semibold text-lg">{viewingPub.title}</h3>
@@ -275,7 +273,6 @@ const Podcasts = () => {
                         </button>
                       </div>
                     </div>
-                    {/* PDF iframe */}
                     <div className="flex-1">
                       <iframe
                         src={viewingPub.file_url}
@@ -287,7 +284,8 @@ const Podcasts = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-          )}
+          </>
+          )
         </div>
       </section>
     </div>
