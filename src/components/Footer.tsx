@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { AudioLines, Instagram, Linkedin, Mail } from "lucide-react";
+import { Instagram, Linkedin, Mail } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -9,7 +10,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 font-display font-bold text-lg">
-              <AudioLines className="h-5 w-5 text-primary" />
+              <img src={logo} alt="Orators' Club Logo" className="h-10 w-auto" />
               ORATORS' CLUB
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">

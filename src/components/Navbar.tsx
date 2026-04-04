@@ -3,8 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
-import logoDark from "@/assets/logo-dark.png";
-import logoLight from "@/assets/logo-light.png";
+import logo from "@/assets/logo.png";
 
 const navLinks = [
 { label: "Home", path: "/" },
@@ -34,7 +33,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2 font-display font-bold text-xl">
           <img
-            src={isLight ? logoLight : logoDark}
+            src={logo}
             alt="Orators' Club Logo"
             className="h-12 w-auto" />
 
