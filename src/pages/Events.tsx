@@ -220,6 +220,7 @@ const Events = () => {
           </AnimatePresence>
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };

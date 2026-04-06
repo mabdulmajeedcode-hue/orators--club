@@ -316,6 +316,7 @@ const Podcasts = () => {
           )}
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };
