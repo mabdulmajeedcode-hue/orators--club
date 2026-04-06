@@ -152,7 +152,9 @@ const Join = () => {
           </motion.form>
         </div>
       </section>
+      </ScrollSection>
 
+      <ScrollSection>
       <section className="py-20 bg-card">
         <div className="container max-w-2xl text-center">
           <h2 className="font-display text-3xl font-bold uppercase mb-2">Membership FAQs</h2>
