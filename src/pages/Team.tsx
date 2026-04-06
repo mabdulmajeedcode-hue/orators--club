@@ -183,6 +183,7 @@ const Team = () => {
 
       {/* Faculty Coordinators */}
       {facultyCoordinators.length > 0 && (
+        <ScrollSection>
         <section className="py-16">
           <div className="container">
             <div className="mb-8">
@@ -196,6 +197,7 @@ const Team = () => {
             </div>
           </div>
         </section>
+        </ScrollSection>
       )}
 
       {/* Governing Body */}
