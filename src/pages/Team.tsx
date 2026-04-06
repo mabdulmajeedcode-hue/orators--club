@@ -231,6 +231,7 @@ const Team = () => {
       </ScrollSection>
 
       {/* EXECOM */}
+      <ScrollSection>
       <section className="py-16 bg-card">
         <div className="container">
           <div className="mb-10">
@@ -247,6 +248,7 @@ const Team = () => {
           </div>
         </div>
       </section>
+      </ScrollSection>
 
       {/* Core Members */}
       <section className="py-20">
