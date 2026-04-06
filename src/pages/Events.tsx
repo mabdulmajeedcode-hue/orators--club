@@ -140,13 +140,19 @@ const Events = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20">
         <div className="container">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
             <div>
-              <h1 className="section-heading text-4xl md:text-5xl">
+              <motion.h1
+                className="section-heading text-4xl md:text-5xl"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+              >
                 Upcoming <span className="gradient-text">Events</span>
-              </h1>
+              </motion.h1>
               <p className="text-muted-foreground mt-2 max-w-lg">
                 Discover workshops, high-stakes debates, and guest lectures hosted by the premier voice of MJCET.
               </p>
