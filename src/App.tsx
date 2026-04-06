@@ -33,7 +33,7 @@ const App = () => (
         <FallingPattern
           color="hsl(var(--primary))"
           backgroundColor="var(--background)"
-          className="fixed inset-0 z-0 opacity-[0.15] dark:opacity-[0.15] pointer-events-none"
+          className="fixed inset-0 z-0 opacity-[0.15] [.light_&]:opacity-[0.08] pointer-events-none"
           duration={150}
         />
         <div className="relative z-10">
