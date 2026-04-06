@@ -201,6 +201,7 @@ const Team = () => {
       )}
 
       {/* Governing Body */}
+      <ScrollSection>
       <section className="py-16">
         <div className="container">
           <div className="flex items-center justify-between mb-8">
@@ -227,6 +228,7 @@ const Team = () => {
           </div>
         </div>
       </section>
+      </ScrollSection>
 
       {/* EXECOM */}
       <section className="py-16 bg-card">
