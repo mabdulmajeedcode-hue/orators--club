@@ -162,17 +162,24 @@ const Team = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20 text-center">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Organisational Hierarchy</span>
-          <h1 className="section-heading text-4xl md:text-5xl mb-4">
+          <motion.h1
+            className="section-heading text-4xl md:text-5xl mb-4"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             Our <span className="gradient-text italic">Team</span>
-          </h1>
+          </motion.h1>
           <p className="text-muted-foreground max-w-xl mx-auto">
             Structured for excellence, driven by passion. Meet the tiers of talent shaping the future of eloquence at MJCET.
           </p>
         </div>
       </section>
+      </ScrollSection>
 
       {/* Faculty Coordinators */}
       {facultyCoordinators.length > 0 && (
