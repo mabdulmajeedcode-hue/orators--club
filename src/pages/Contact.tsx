@@ -35,18 +35,26 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20 text-center bg-card">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Get in Touch</span>
-          <h1 className="section-heading text-4xl md:text-6xl">
+          <motion.h1
+            className="section-heading text-4xl md:text-6xl"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             Let's Start a <span className="gradient-text">Conversation</span>
-          </h1>
+          </motion.h1>
           <p className="text-muted-foreground mt-4 max-w-lg mx-auto">
             Have questions about membership, upcoming debates, or partnership opportunities? We're here to listen.
           </p>
         </div>
       </section>
+      </ScrollSection>
 
+      <ScrollSection>
       <section className="py-20">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-12">
