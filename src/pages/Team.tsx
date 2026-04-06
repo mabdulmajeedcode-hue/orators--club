@@ -252,6 +252,7 @@ const Team = () => {
 
       {/* Core Members */}
       <ScrollSection>
+      <section className="py-20">
         <div className="container">
           <div className="mb-10">
             <h2 className="font-display text-2xl font-bold">
