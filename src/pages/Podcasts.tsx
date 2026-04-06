@@ -156,12 +156,18 @@ const Podcasts = () => {
   return (
     <div className="min-h-screen pt-16">
       {/* Podcasts Section */}
+      <ScrollSection>
       <section className="py-20">
         <div className="container">
           <div className="mb-12">
-            <h1 className="section-heading text-4xl md:text-5xl">
+            <motion.h1
+              className="section-heading text-4xl md:text-5xl"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
               Club <span className="gradient-text">Content</span>
-            </h1>
+            </motion.h1>
             <p className="text-muted-foreground mt-2">Listen to the latest debates, speeches, and interviews.</p>
           </div>
 
