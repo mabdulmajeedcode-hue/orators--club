@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ScrollSection from "@/components/ScrollSection";
 
 const faqs = [
   { q: "What is the time commitment?", a: "Most members spend 3-5 hours per week on club activities including weekly meetings and practice sessions." },
