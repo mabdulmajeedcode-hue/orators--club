@@ -190,8 +190,10 @@ const Podcasts = () => {
           </AnimatePresence>
         </div>
       </section>
+      </ScrollSection>
 
       {/* Newsletters & Publications Section */}
+      <ScrollSection>
       <section className="py-20 bg-card">
         <div className="container">
           <div className="mb-12">
