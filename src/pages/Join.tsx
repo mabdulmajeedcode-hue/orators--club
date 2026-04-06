@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ScrollSection from "@/components/ScrollSection";
 
 const faqs = [
   { q: "What is the time commitment?", a: "Most members spend 3-5 hours per week on club activities including weekly meetings and practice sessions." },
@@ -47,18 +48,26 @@ const Join = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20 text-center">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Join the Club</span>
-          <h1 className="section-heading text-5xl md:text-7xl mb-4">
+          <motion.h1
+            className="section-heading text-5xl md:text-7xl mb-4"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             Your Voice <span className="gradient-text">Deserves</span> a Platform
-          </h1>
+          </motion.h1>
           <p className="text-muted-foreground max-w-xl mx-auto">
             Become a member of the Orators Club today. Access exclusive workshops, mentorship, and a community dedicated to mastering the art of persuasion.
           </p>
         </div>
       </section>
+      </ScrollSection>
 
+      <ScrollSection>
       <section className="py-12">
         <div className="container max-w-2xl">
           <motion.form
@@ -143,7 +152,9 @@ const Join = () => {
           </motion.form>
         </div>
       </section>
+      </ScrollSection>
 
+      <ScrollSection>
       <section className="py-20 bg-card">
         <div className="container max-w-2xl text-center">
           <h2 className="font-display text-3xl font-bold uppercase mb-2">Membership FAQs</h2>
@@ -166,6 +177,7 @@ const Join = () => {
           </div>
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };

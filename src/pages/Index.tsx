@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ScrollSection from "@/components/ScrollSection";
 import heroTeam from "@/assets/hero-team.jpg";
 
 const fadeUp = {
@@ -55,36 +56,32 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero — updated text hierarchy per Section 2.1 */}
+      {/* Hero */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroTeam} alt="Orators Club team" className="w-full h-full object-cover grayscale" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background" />
         </div>
         <div className="container relative z-10 text-center py-32">
-          {/* Lines 1-5: Institutional text */}
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="mb-4">
-            {/* Institutional name — visible in both light and dark modes */}
             <p className="text-xs md:text-sm uppercase tracking-widest text-white dark:text-white [.light_&]:text-foreground font-medium">Muffakham Jah College of Engineering and Technology</p>
             <p className="text-xs md:text-sm text-white/80 dark:text-white/80 [.light_&]:text-foreground/70">(Sultan-Ul-Uloom Education Society)</p>
           </motion.div>
 
-          {/* Line 6: Club name — dominant heading */}
           <motion.h1
             className="section-heading text-5xl md:text-7xl lg:text-8xl mb-2"
-            initial="hidden" animate="visible" variants={fadeUp} custom={1}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
           >
             ORATORS'{" "}
             <span className="gradient-text">CLUB</span>
           </motion.h1>
 
-          {/* Line 7: Sub-heading */}
-          {/* Flagship line — slightly darker text in light mode for readability */}
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={2}>
             <span className="section-badge mb-6 inline-block [.light_&]:text-primary [.light_&]:border-primary/60">A Flagship of the Department of English, MJCET</span>
           </motion.div>
 
-          {/* Tagline */}
           <motion.p
             className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10 italic"
             initial="hidden" animate="visible" variants={fadeUp} custom={3}
@@ -106,120 +103,130 @@ const Index = () => {
         </div>
       </section>
 
-      {/* About / Mission — Section 2.2 rewritten as warm prose */}
-      <section className="py-24">
-        <div className="container">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <img alt="Students in discussion" className="rounded-xl w-full aspect-[4/3] object-cover" src="/lovable-uploads/b8f2ab81-e795-4e5d-98f0-be01a5c4ae35.jpg" />
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <span className="section-badge mb-4 inline-block">About Us</span>
-              <h2 className="section-heading text-3xl md:text-4xl mb-4">Our <span className="gradient-text">Story</span></h2>
-              <div className="w-12 h-1 bg-primary rounded mb-6" />
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Established in 2003 by the Department of English at MJCET and revived with fresh energy in 2009, the Orators' Club has grown into one of the most active and beloved student organisations on campus. It is a one-of-a-kind platform where engineering students step beyond equations and algorithms to master the art of expression — building oratory skill, communication finesse, and the soft skills that set leaders apart.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                From formal events like Debates, Group Discussions, Elocution, Essay Writing, Mock Interviews, and PowerPoint Presentations, to creative pursuits including Poster Making, Slogan Writing, Picture Perception, and Photography — the club offers something for every voice waiting to be heard.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Members don't just build language and reasoning skills; they cultivate creative thinking, leadership, and civic responsibility. With numerous awards at intercollegiate and state-level competitions, joining the Orators' Club is the first step toward conquering stage fear, breaking self-doubt, and preparing yourself for the professional world.
-              </p>
-            </motion.div>
+      {/* About / Mission */}
+      <ScrollSection>
+        <section className="py-24">
+          <div className="container">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                <img alt="Students in discussion" className="rounded-xl w-full aspect-[4/3] object-cover" src="/lovable-uploads/b8f2ab81-e795-4e5d-98f0-be01a5c4ae35.jpg" />
+              </motion.div>
+              <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                <span className="section-badge mb-4 inline-block">About Us</span>
+                <h2 className="section-heading text-3xl md:text-4xl mb-4">Our <span className="gradient-text">Story</span></h2>
+                <div className="w-12 h-1 bg-primary rounded mb-6" />
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  Established in 2003 by the Department of English at MJCET and revived with fresh energy in 2009, the Orators' Club has grown into one of the most active and beloved student organisations on campus. It is a one-of-a-kind platform where engineering students step beyond equations and algorithms to master the art of expression — building oratory skill, communication finesse, and the soft skills that set leaders apart.
+                </p>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  From formal events like Debates, Group Discussions, Elocution, Essay Writing, Mock Interviews, and PowerPoint Presentations, to creative pursuits including Poster Making, Slogan Writing, Picture Perception, and Photography — the club offers something for every voice waiting to be heard.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Members don't just build language and reasoning skills; they cultivate creative thinking, leadership, and civic responsibility. With numerous awards at intercollegiate and state-level competitions, joining the Orators' Club is the first step toward conquering stage fear, breaking self-doubt, and preparing yourself for the professional world.
+                </p>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSection>
 
       {/* Features */}
-      <section className="py-24 bg-card">
-        <div className="container">
-          <div className="text-center mb-16">
-            <span className="section-badge mb-4 inline-block">What We Do</span>
-            <h2 className="section-heading text-3xl md:text-4xl">Core <span className="gradient-text">Features</span></h2>
+      <ScrollSection>
+        <section className="py-24 bg-card">
+          <div className="container">
+            <div className="text-center mb-16">
+              <span className="section-badge mb-4 inline-block">What We Do</span>
+              <h2 className="section-heading text-3xl md:text-4xl">Core <span className="gradient-text">Features</span></h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((f, i) => (
+                <motion.div
+                  key={f.title}
+                  className="p-6 rounded-xl border border-border bg-background card-hover"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                >
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <f.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.title}
-                className="p-6 rounded-xl border border-border bg-background card-hover"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <f.icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSection>
 
       {/* Stats */}
-      <section className="py-24">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((s, i) => (
-              <motion.div
-                key={s.label}
-                className="text-center"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
-                <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
-                <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">{s.value}</div>
-                <div className="text-sm text-muted-foreground uppercase tracking-wider">{s.label}</div>
-              </motion.div>
-            ))}
+      <ScrollSection>
+        <section className="py-24">
+          <div className="container">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((s, i) => (
+                <motion.div
+                  key={s.label}
+                  className="text-center"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                >
+                  <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
+                  <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">{s.value}</div>
+                  <div className="text-sm text-muted-foreground uppercase tracking-wider">{s.label}</div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSection>
 
       {/* Newsletter */}
-      <section className="py-24 bg-card">
-        <div className="container max-w-2xl text-center">
-          <span className="section-badge mb-4 inline-block">Stay Updated</span>
-          <h2 className="section-heading text-3xl md:text-4xl mb-4">Join Our <span className="gradient-text">Newsletter</span></h2>
-          <p className="text-muted-foreground mb-8">Get the latest updates on events, workshops, and club activities delivered to your inbox.</p>
-          <form onSubmit={handleNewsletter} className="flex gap-3 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex-1"
-            />
-            <Button type="submit" disabled={subscribing}>
-              {subscribing ? "..." : <><Send className="h-4 w-4 mr-2" /> Subscribe</>}
-            </Button>
-          </form>
-        </div>
-      </section>
+      <ScrollSection>
+        <section className="py-24 bg-card">
+          <div className="container max-w-2xl text-center">
+            <span className="section-badge mb-4 inline-block">Stay Updated</span>
+            <h2 className="section-heading text-3xl md:text-4xl mb-4">Join Our <span className="gradient-text">Newsletter</span></h2>
+            <p className="text-muted-foreground mb-8">Get the latest updates on events, workshops, and club activities delivered to your inbox.</p>
+            <form onSubmit={handleNewsletter} className="flex gap-3 max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex-1"
+              />
+              <Button type="submit" disabled={subscribing}>
+                {subscribing ? "..." : <><Send className="h-4 w-4 mr-2" /> Subscribe</>}
+              </Button>
+            </form>
+          </div>
+        </section>
+      </ScrollSection>
 
       {/* CTA */}
-      <section className="py-24 bg-primary">
-        <div className="container text-center">
-          <h2 className="section-heading text-3xl md:text-5xl text-primary-foreground mb-4">Ready to Speak Up?</h2>
-          <p className="text-primary-foreground/80 max-w-lg mx-auto mb-8">
-            Join a community that values your voice. The podium is waiting for you.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" variant="secondary" asChild>
-              <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Apply for Membership</a>
-            </Button>
-            <Button size="lg" variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/10" asChild>
-              <Link to="/contact">Contact Us</Link>
-            </Button>
+      <ScrollSection>
+        <section className="py-24 bg-primary">
+          <div className="container text-center">
+            <h2 className="section-heading text-3xl md:text-5xl text-primary-foreground mb-4">Ready to Speak Up?</h2>
+            <p className="text-primary-foreground/80 max-w-lg mx-auto mb-8">
+              Join a community that values your voice. The podium is waiting for you.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button size="lg" variant="secondary" asChild>
+                <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Apply for Membership</a>
+              </Button>
+              <Button size="lg" variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/10" asChild>
+                <Link to="/contact">Contact Us</Link>
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSection>
     </div>
   );
 };

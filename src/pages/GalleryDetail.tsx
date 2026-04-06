@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import ScrollSection from "@/components/ScrollSection";
 
 // ---- Lightbox Component ----
 const Lightbox = ({
@@ -146,6 +147,7 @@ const GalleryDetail = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20">
         <div className="container">
           <Button variant="ghost" className="mb-6" asChild>
@@ -201,7 +203,7 @@ const GalleryDetail = () => {
           )}
         </div>
       </section>
-
+      </ScrollSection>
       {/* Lightbox */}
       <AnimatePresence>
         {lightboxIndex !== null && (

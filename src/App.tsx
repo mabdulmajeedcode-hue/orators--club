@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SitePopup from "@/components/SitePopup";
 import ScrollToTop from "@/components/ScrollToTop";
+import { FallingPattern } from "@/components/ui/falling-pattern";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Events from "./pages/Events";
@@ -28,22 +29,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
-        <Navbar />
-        <SitePopup />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/podcasts" element={<Podcasts />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/gallery/:id" element={<GalleryDetail />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/join" element={<Join />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
+        {/* Fixed falling pattern background */}
+        <FallingPattern
+          color="hsl(var(--primary))"
+          backgroundColor="var(--background)"
+          className="fixed inset-0 z-0 opacity-[0.15] [.light_&]:opacity-[0.08] pointer-events-none"
+          duration={150}
+        />
+        <div className="relative z-10">
+          <Navbar />
+          <SitePopup />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/podcasts" element={<Podcasts />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/gallery/:id" element={<GalleryDetail />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/join" element={<Join />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Footer />
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
