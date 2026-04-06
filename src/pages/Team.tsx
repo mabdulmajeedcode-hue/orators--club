@@ -296,6 +296,7 @@ const Team = () => {
           </AnimatePresence>
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };

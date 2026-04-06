@@ -156,6 +156,7 @@ const Gallery = () => {
           )}
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };
