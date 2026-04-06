@@ -177,6 +177,7 @@ const Join = () => {
           </div>
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };

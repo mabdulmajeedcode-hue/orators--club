@@ -151,6 +151,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
+      </ScrollSection>
     </div>
   );
 };
