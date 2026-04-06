@@ -81,13 +81,19 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
             <span className="section-badge mb-4 inline-block">Gallery</span>
-            <h1 className="section-heading text-4xl md:text-5xl">
+            <motion.h1
+              className="section-heading text-4xl md:text-5xl"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
               Moments That <span className="gradient-text">Matter</span>
-            </h1>
+            </motion.h1>
           </div>
 
           {/* Year filter tabs — "All Years" has no year highlighted */}
