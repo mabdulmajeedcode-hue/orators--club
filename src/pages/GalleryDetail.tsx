@@ -147,6 +147,7 @@ const GalleryDetail = () => {
 
   return (
     <div className="min-h-screen pt-16">
+      <ScrollSection>
       <section className="py-20">
         <div className="container">
           <Button variant="ghost" className="mb-6" asChild>
