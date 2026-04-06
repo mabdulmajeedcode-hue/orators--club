@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Loader2, ExternalLink, X, Download, FileText, Image as ImageIcon, Eye } from "lucide-react";
+import ScrollSection from "@/components/ScrollSection";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
