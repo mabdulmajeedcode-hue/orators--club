@@ -203,7 +203,7 @@ const GalleryDetail = () => {
           )}
         </div>
       </section>
-
+      </ScrollSection>
       {/* Lightbox */}
       <AnimatePresence>
         {lightboxIndex !== null && (
