@@ -67,6 +67,7 @@ const Join = () => {
       </section>
       </ScrollSection>
 
+      <ScrollSection>
       <section className="py-12">
         <div className="container max-w-2xl">
           <motion.form
