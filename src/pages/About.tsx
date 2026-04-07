@@ -247,7 +247,7 @@ const About = () => {
 
       {/* 6. Publications & Achievements */}
       <ScrollSection>
-        <section className="py-20 bg-primary/10">
+        <section className="py-20 bg-primary/5">
           <div className="container max-w-6xl">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>Publications & <span className="gradient-text">Achievements</span></SectionHeading>
