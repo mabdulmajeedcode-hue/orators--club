@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { CinematicFooter } from "@/components/ui/motion-footer";
 import SitePopup from "@/components/SitePopup";
 import ScrollToTop from "@/components/ScrollToTop";
 import { FallingPattern } from "@/components/ui/falling-pattern";
@@ -33,7 +33,7 @@ const App = () => (
         <FallingPattern
           color="hsl(var(--primary))"
           backgroundColor="var(--background)"
-          className="fixed inset-0 z-0 opacity-[0.15] [.light_&]:opacity-[0.08] pointer-events-none"
+          className="fixed inset-0 z-0 opacity-[0.20] [.light_&]:opacity-[0.10] pointer-events-none"
           duration={150}
         />
         <div className="relative z-10">
@@ -52,7 +52,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Footer />
+          <CinematicFooter />
         </div>
       </BrowserRouter>
     </TooltipProvider>
