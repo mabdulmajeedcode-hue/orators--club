@@ -41,9 +41,9 @@ const Contact = () => {
           <span className="section-badge mb-4 inline-block">Get in Touch</span>
           <motion.h1
             className="section-heading text-4xl md:text-6xl"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             Let's Start a <span className="gradient-text">Conversation</span>
           </motion.h1>

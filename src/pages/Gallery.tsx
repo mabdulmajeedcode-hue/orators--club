@@ -88,9 +88,9 @@ const Gallery = () => {
             <span className="section-badge mb-4 inline-block">Gallery</span>
             <motion.h1
               className="section-heading text-4xl md:text-5xl"
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
               Moments That <span className="gradient-text">Matter</span>
             </motion.h1>

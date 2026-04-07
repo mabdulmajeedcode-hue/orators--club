@@ -54,9 +54,9 @@ const Join = () => {
           <span className="section-badge mb-4 inline-block">Join the Club</span>
           <motion.h1
             className="section-heading text-5xl md:text-7xl mb-4"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             Your Voice <span className="gradient-text">Deserves</span> a Platform
           </motion.h1>

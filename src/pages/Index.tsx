@@ -70,9 +70,9 @@ const Index = () => {
 
           <motion.h1
             className="section-heading text-5xl md:text-7xl lg:text-8xl mb-2"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
           >
             ORATORS'{" "}
             <span className="gradient-text">CLUB</span>
