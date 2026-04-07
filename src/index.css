@@ -111,6 +111,14 @@
   .card-hover {
     @apply transition-all duration-300 hover:border-primary/40 hover:-translate-y-1;
   }
+
+  /* Semi-transparent section backgrounds so the falling pattern shows through */
+  .bg-card-translucent {
+    background-color: hsl(var(--card) / 0.85);
+  }
+  .bg-primary-translucent {
+    background-color: hsl(var(--primary) / 0.85);
+  }
 }
 
 @layer utilities {
