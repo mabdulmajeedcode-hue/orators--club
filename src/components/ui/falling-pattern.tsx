@@ -44,9 +44,6 @@ export function FallingPattern({
   return (
     <div
       className={cn('relative overflow-hidden', className)}
-      style={{
-        backgroundColor: `hsl(${backgroundColor})`,
-      }}
     >
       <div className="absolute inset-0" style={{ filter: `blur(${blurIntensity})` }}>
         <motion.div
@@ -65,7 +62,6 @@ export function FallingPattern({
           }}
         />
       </div>
-      <div className="absolute inset-0 backdrop-blur-sm" />
     </div>
   );
 }
