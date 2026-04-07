@@ -124,7 +124,7 @@ const About = () => {
 
       {/* 2. Department of English */}
       <ScrollSection>
-        <section className="py-20 bg-card">
+        <section className="py-20 bg-card-translucent">
           <div className="container max-w-6xl">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>About the <span className="gradient-text">Department of English</span></SectionHeading>
@@ -204,7 +204,7 @@ const About = () => {
 
       {/* 4. What We Do */}
       <ScrollSection>
-        <section className="py-20 bg-card">
+        <section className="py-20 bg-card-translucent">
           <div className="container max-w-6xl">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>What We <span className="gradient-text">Do</span></SectionHeading>
@@ -270,7 +270,7 @@ const About = () => {
 
       {/* 7. Sub-Chapters */}
       <ScrollSection>
-        <section className="py-20 bg-card">
+        <section className="py-20 bg-card-translucent">
           <div className="container max-w-6xl">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>Sub-<span className="gradient-text">Chapters</span></SectionHeading>

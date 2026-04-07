@@ -36,7 +36,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen pt-16">
       <ScrollSection>
-      <section className="py-20 text-center bg-card">
+      <section className="py-20 text-center bg-card-translucent">
         <div className="container">
           <span className="section-badge mb-4 inline-block">Get in Touch</span>
           <motion.h1

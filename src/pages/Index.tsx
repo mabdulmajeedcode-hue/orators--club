@@ -132,7 +132,7 @@ const Index = () => {
 
       {/* Features */}
       <ScrollSection>
-        <section className="py-24 bg-card">
+        <section className="py-24 bg-card-translucent">
           <div className="container">
             <div className="text-center mb-16">
               <span className="section-badge mb-4 inline-block">What We Do</span>
@@ -186,7 +186,7 @@ const Index = () => {
 
       {/* Newsletter */}
       <ScrollSection>
-        <section className="py-24 bg-card">
+        <section className="py-24 bg-card-translucent">
           <div className="container max-w-2xl text-center">
             <span className="section-badge mb-4 inline-block">Stay Updated</span>
             <h2 className="section-heading text-3xl md:text-4xl mb-4">Join Our <span className="gradient-text">Newsletter</span></h2>
@@ -210,7 +210,7 @@ const Index = () => {
 
       {/* CTA */}
       <ScrollSection>
-        <section className="py-24 bg-primary">
+        <section className="py-24 bg-primary-translucent">
           <div className="container text-center">
             <h2 className="section-heading text-3xl md:text-5xl text-primary-foreground mb-4">Ready to Speak Up?</h2>
             <p className="text-primary-foreground/80 max-w-lg mx-auto mb-8">
