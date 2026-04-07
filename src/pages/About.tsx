@@ -76,9 +76,9 @@ const About = () => {
           <span className="section-badge mb-4 inline-block">About Us</span>
           <motion.h1
             className="section-heading text-6xl md:text-8xl lg:text-9xl mb-4"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             The <span className="gradient-text">Orators'</span> Club
           </motion.h1>
