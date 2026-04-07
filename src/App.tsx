@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import { CinematicFooter } from "@/components/ui/motion-footer";
+import Footer from "@/components/Footer";
 import SitePopup from "@/components/SitePopup";
 import ScrollToTop from "@/components/ScrollToTop";
 import { FallingPattern } from "@/components/ui/falling-pattern";
@@ -52,7 +52,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <CinematicFooter />
+          <Footer />
         </div>
       </BrowserRouter>
     </TooltipProvider>
