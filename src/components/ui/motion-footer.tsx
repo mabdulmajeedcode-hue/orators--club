@@ -82,7 +82,7 @@ const STYLES = `
 `;
 
 export type MagneticButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
-  React.AnchorHTMLAttributes<HTMLAnchorElement> & { as?: React.ElementType };
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & { as?: React.ElementType; to?: string; [key: string]: any };
 
 const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
   ({ className, children, as: Component = "button", ...props }, forwardedRef) => {
