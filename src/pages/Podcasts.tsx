@@ -194,7 +194,7 @@ const Podcasts = () => {
 
       {/* Newsletters & Publications Section */}
       <ScrollSection>
-      <section className="py-20 bg-card">
+      <section className="py-20 bg-card-translucent">
         <div className="container">
           <div className="mb-12">
             <span className="section-badge mb-4 inline-block">Resources</span>

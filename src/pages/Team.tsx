@@ -232,7 +232,7 @@ const Team = () => {
 
       {/* EXECOM */}
       <ScrollSection>
-      <section className="py-16 bg-card">
+      <section className="py-16 bg-card-translucent">
         <div className="container">
           <div className="mb-10">
             <h2 className="font-display text-2xl font-bold">
