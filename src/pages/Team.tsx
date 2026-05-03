@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import ScrollSection from "@/components/ScrollSection";
+import { GlowCard } from "@/components/ui/spotlight-card";
 
 const departments = ["PR", "HR", "Operations", "Media", "Technical", "Research", "Documentation", "Marketing"];
 
@@ -30,12 +31,13 @@ const LinkedInIcon = ({ url }: { url?: string | null }) => {
 // Faculty Coordinators — same style as Governing Body but without role label
 const StaffCoordinatorCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
-    className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.08 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ delay: i * 0.1, duration: 0.5 }}
   >
+    <GlowCard glowColor="green" className="p-0 bg-card">
+    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden group cursor-pointer">
     {member.image_url ? (
       <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
     ) : (
@@ -50,17 +52,20 @@ const StaffCoordinatorCard = ({ member, i }: { member: Member; i: number }) => (
         <LinkedInIcon url={member.linkedin_url} />
       </div>
     </div>
+    </div>
+    </GlowCard>
   </motion.div>
 );
 
 const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
-    className="relative aspect-[3/4] rounded-xl overflow-hidden group cursor-pointer"
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.08 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ delay: i * 0.1, duration: 0.5 }}
   >
+    <GlowCard glowColor="green" className="p-0 bg-card">
+    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden group cursor-pointer">
     {member.image_url ? (
       <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
     ) : (
@@ -76,17 +81,19 @@ const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
       </div>
       <p className="text-primary text-xs font-semibold uppercase tracking-wider">{member.role}</p>
     </div>
+    </div>
+    </GlowCard>
   </motion.div>
 );
 
 const ExecomCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
-    className="rounded-xl border border-border bg-background overflow-hidden group card-hover"
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.06 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ delay: i * 0.08, duration: 0.5 }}
   >
+    <GlowCard glowColor="green" className="overflow-hidden bg-background p-0 group">
     <div className="aspect-square overflow-hidden">
       {member.image_url ? (
         <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -103,17 +110,18 @@ const ExecomCard = ({ member, i }: { member: Member; i: number }) => (
       </div>
       <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
     </div>
+    </GlowCard>
   </motion.div>
 );
 
 const CoreCard = ({ member, i }: { member: Member; i: number }) => (
   <motion.div
-    className="rounded-xl border border-border bg-card overflow-hidden group card-hover"
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: i * 0.06 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ delay: i * 0.08, duration: 0.5 }}
   >
+    <GlowCard glowColor="green" className="overflow-hidden bg-card p-0 group">
     <div className="aspect-square overflow-hidden">
       {member.image_url ? (
         <img src={member.image_url} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -130,6 +138,7 @@ const CoreCard = ({ member, i }: { member: Member; i: number }) => (
       </div>
       <p className="text-primary text-xs font-medium uppercase tracking-wider">{member.role}</p>
     </div>
+    </GlowCard>
   </motion.div>
 );
 
