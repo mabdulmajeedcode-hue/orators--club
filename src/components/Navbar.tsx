@@ -19,6 +19,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const [isLight, setIsLight] = useState(document.documentElement.classList.contains('light'));
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -28,8 +29,15 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-background/85 backdrop-blur-xl border-b border-border shadow-lg shadow-background/40' : 'bg-background/40 backdrop-blur-md border-b border-transparent'}`}>
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2 font-display font-bold text-xl">
           <img
