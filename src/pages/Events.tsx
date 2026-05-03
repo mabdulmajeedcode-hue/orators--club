@@ -4,6 +4,7 @@ import { ArrowRight, Loader2, CheckCircle, X } from "lucide-react";
 import ScrollSection from "@/components/ScrollSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { GlowCard } from "@/components/ui/spotlight-card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -80,13 +81,15 @@ const EventCard = ({ event, i, onSelect }: { event: any; i: number; onSelect: ()
 
   return (
     <motion.div
-      className="rounded-xl border border-border bg-card overflow-hidden card-hover cursor-pointer"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: i * 0.05, duration: 0.4 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ delay: i * 0.1, duration: 0.5 }}
       onClick={onSelect}
+      className="cursor-pointer"
     >
-      <div className="relative h-48 bg-secondary flex items-center justify-center">
+      <GlowCard glowColor="green" className="overflow-hidden bg-card p-0">
+      <div className="relative h-48 bg-secondary flex items-center justify-center overflow-hidden rounded-t-2xl">
         {event.image && (
           <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
         )}
@@ -106,6 +109,7 @@ const EventCard = ({ event, i, onSelect }: { event: any; i: number; onSelect: ()
         <h3 className="font-display font-semibold text-lg mt-1 mb-2">{event.title}</h3>
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-3">{event.description}</p>
       </div>
+      </GlowCard>
     </motion.div>
   );
 };

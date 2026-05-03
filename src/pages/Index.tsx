@@ -7,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollSection from "@/components/ScrollSection";
+import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
+import { GlowCard } from "@/components/ui/spotlight-card";
+import Marquee from "@/components/Marquee";
+import AnimatedCounter from "@/components/AnimatedCounter";
 import heroTeam from "@/assets/hero-team.jpg";
 
 const fadeUp = {
@@ -56,52 +60,34 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroTeam} alt="Orators Club team" className="w-full h-full object-cover grayscale" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background" />
-        </div>
-        <div className="container relative z-10 text-center py-32">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="mb-4">
-            <p className="text-xs md:text-sm uppercase tracking-widest text-white dark:text-white [.light_&]:text-foreground font-medium">Muffakham Jah College of Engineering and Technology</p>
-            <p className="text-xs md:text-sm text-white/80 dark:text-white/80 [.light_&]:text-foreground/70">(Sultan-Ul-Uloom Education Society)</p>
-          </motion.div>
-
-          <motion.h1
-            className="section-heading text-5xl md:text-7xl lg:text-8xl mb-2"
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-          >
-            ORATORS'{" "}
-            <span className="gradient-text">CLUB</span>
-          </motion.h1>
-
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={2}>
-            <span className="section-badge mb-6 inline-block [.light_&]:text-primary [.light_&]:border-primary/60">A Flagship of the Department of English, MJCET</span>
-          </motion.div>
-
-          <motion.p
-            className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10 italic"
-            initial="hidden" animate="visible" variants={fadeUp} custom={3}
-          >
+      {/* Scroll Expansion Hero */}
+      <ScrollExpandMedia
+        mediaType="image"
+        mediaSrc={heroTeam}
+        bgImageSrc={heroTeam}
+        title="The Orators' Club"
+        date="Since 2003"
+        scrollToExpand="Scroll to explore"
+        textBlend
+      >
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
+          <p className="text-lg text-muted-foreground italic mb-8">
             "Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally"
-          </motion.p>
-
-          <motion.div
-            className="flex flex-wrap justify-center gap-4"
-            initial="hidden" animate="visible" variants={fadeUp} custom={4}
-          >
-            <Button size="lg" asChild>
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button size="lg" className="pulse-glow" asChild>
               <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></a>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link to="/events">Explore Events</Link>
             </Button>
-          </motion.div>
+          </div>
         </div>
-      </section>
+      </ScrollExpandMedia>
+
+      {/* Marquee strip */}
+      <Marquee />
 
       {/* About / Mission */}
       <ScrollSection>
@@ -142,17 +128,18 @@ const Index = () => {
               {features.map((f, i) => (
                 <motion.div
                   key={f.title}
-                  className="p-6 rounded-xl border border-border bg-background card-hover"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1, duration: 0.5 }}
                 >
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <f.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                  <GlowCard glowColor="green" className="h-full bg-background p-6">
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                      <f.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-display font-semibold text-lg mb-2">{f.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                  </GlowCard>
                 </motion.div>
               ))}
             </div>
@@ -175,7 +162,9 @@ const Index = () => {
                   transition={{ delay: i * 0.1, duration: 0.5 }}
                 >
                   <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
-                  <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">{s.value}</div>
+                  <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">
+                    <AnimatedCounter value={s.value} />
+                  </div>
                   <div className="text-sm text-muted-foreground uppercase tracking-wider">{s.label}</div>
                 </motion.div>
               ))}
@@ -217,7 +206,7 @@ const Index = () => {
               Join a community that values your voice. The podium is waiting for you.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" variant="secondary" asChild>
+              <Button size="lg" variant="secondary" className="pulse-glow" asChild>
                 <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Apply for Membership</a>
               </Button>
               <Button size="lg" variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/10" asChild>

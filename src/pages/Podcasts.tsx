@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { GlowCard } from "@/components/ui/spotlight-card";
 
 const getYouTubeEmbedUrl = (url: string) => {
   try {
@@ -82,12 +83,14 @@ const PodcastModal = ({ ep, onClose }: { ep: any; onClose: () => void }) => {
 
 const PodcastCard = ({ ep, i, onSelect }: { ep: any; i: number; onSelect: () => void }) => (
   <motion.div
-    className="rounded-xl border border-border bg-card overflow-hidden card-hover shadow-sm cursor-pointer"
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: i * 0.08 }}
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ delay: i * 0.1, duration: 0.5 }}
     onClick={onSelect}
+    className="cursor-pointer"
   >
+    <GlowCard glowColor="green" className="overflow-hidden bg-card p-0">
     <div className="flex flex-col sm:flex-row">
       <div className="flex-1 p-6 flex flex-col justify-center order-2 sm:order-1">
         <h3 className="font-display font-semibold text-xl mb-2">{ep.title}</h3>
@@ -113,6 +116,7 @@ const PodcastCard = ({ ep, i, onSelect }: { ep: any; i: number; onSelect: () => 
         )}
       </div>
     </div>
+    </GlowCard>
   </motion.div>
 );
 
@@ -216,12 +220,14 @@ const Podcasts = () => {
               {publications.map((pub: any, i: number) => (
                 <motion.div
                   key={pub.id}
-                  className="rounded-xl border border-border bg-background overflow-hidden card-hover flex flex-col cursor-pointer"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
+                  className="cursor-pointer"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
                   onClick={() => pub.file_type === "pdf" && setViewingPub(pub)}
                 >
+                  <GlowCard glowColor="green" className="overflow-hidden bg-background p-0 flex flex-col h-full">
                   <div className="h-48 bg-secondary flex items-center justify-center overflow-hidden">
                     {pub.cover_image ? (
                       <img src={pub.cover_image} alt={pub.title} className="w-full h-full object-cover" />
@@ -249,6 +255,7 @@ const Podcasts = () => {
                       )}
                     </div>
                   </div>
+                  </GlowCard>
                 </motion.div>
               ))}
             </div>

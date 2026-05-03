@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { CheckCircle, MessageSquare, Mic, PenTool, Briefcase, Camera, Globe, BookOpen, Palette, Users, Award } from "lucide-react";
 import ScrollSection from "@/components/ScrollSection";
+import { GlowCard } from "@/components/ui/spotlight-card";
 import aboutHero from "@/assets/about-hero.jpg";
 
 const fadeUp = {
@@ -210,14 +211,22 @@ const About = () => {
               <SectionHeading>What We <span className="gradient-text">Do</span></SectionHeading>
               <p className="text-muted-foreground text-lg mb-10 -mt-6 italic">From the stage to the page — we do it all.</p>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {whatWeDoCards.map((card) => {
+                {whatWeDoCards.map((card, i) => {
                   const Icon = card.icon;
                   return (
-                    <div key={card.title} className="p-6 rounded-xl border border-border bg-background border-t-4 border-t-primary flex flex-col">
-                      <Icon className="h-8 w-8 text-primary mb-4" />
-                      <h3 className="font-display font-semibold text-foreground mb-2">{card.title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
-                    </div>
+                    <motion.div
+                      key={card.title}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.2 }}
+                      transition={{ delay: i * 0.1, duration: 0.5 }}
+                    >
+                      <GlowCard glowColor="green" className="bg-background p-6 h-full flex flex-col">
+                        <Icon className="h-8 w-8 text-primary mb-4" />
+                        <h3 className="font-display font-semibold text-foreground mb-2">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
+                      </GlowCard>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -233,11 +242,19 @@ const About = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>Flagship <span className="gradient-text">Programmes</span></SectionHeading>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {flagshipCards.map((card) => (
-                  <div key={card.name} className="p-6 rounded-xl border border-border bg-card border-l-4 border-l-primary flex flex-col">
-                    <h3 className="font-display font-bold text-lg text-foreground mb-2">{card.name}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
-                  </div>
+                {flagshipCards.map((card, i) => (
+                  <motion.div
+                    key={card.name}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                  >
+                    <GlowCard glowColor="green" className="bg-card p-6 h-full flex flex-col">
+                      <h3 className="font-display font-bold text-lg text-foreground mb-2">{card.name}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
+                    </GlowCard>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
@@ -252,12 +269,20 @@ const About = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>Publications & <span className="gradient-text">Achievements</span></SectionHeading>
               <div className="grid sm:grid-cols-3 gap-6 mb-10">
-                {publicationCards.map((card) => (
-                  <div key={card.title} className="p-6 rounded-xl border border-primary/30 bg-card border-t-4 border-t-primary">
-                    <Award className="h-7 w-7 text-primary mb-3" />
-                    <h3 className="font-display font-semibold text-lg text-foreground mb-2">{card.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
-                  </div>
+                {publicationCards.map((card, i) => (
+                  <motion.div
+                    key={card.title}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                  >
+                    <GlowCard glowColor="green" className="bg-card p-6 h-full">
+                      <Award className="h-7 w-7 text-primary mb-3" />
+                      <h3 className="font-display font-semibold text-lg text-foreground mb-2">{card.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
+                    </GlowCard>
+                  </motion.div>
                 ))}
               </div>
               <p className="text-center text-muted-foreground italic max-w-3xl mx-auto leading-relaxed">
@@ -275,11 +300,19 @@ const About = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <SectionHeading>Sub-<span className="gradient-text">Chapters</span></SectionHeading>
               <div className="grid md:grid-cols-3 gap-6">
-                {subChapters.map((ch) => (
-                  <div key={ch.name} className="p-6 rounded-xl border border-border bg-background border-t-4 border-t-primary">
-                    <h3 className="font-display font-semibold text-lg mb-3 text-foreground">{ch.name}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{ch.desc}</p>
-                  </div>
+                {subChapters.map((ch, i) => (
+                  <motion.div
+                    key={ch.name}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                  >
+                    <GlowCard glowColor="green" className="bg-background p-6 h-full">
+                      <h3 className="font-display font-semibold text-lg mb-3 text-foreground">{ch.name}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{ch.desc}</p>
+                    </GlowCard>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
