@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import ScrollSection from "@/components/ScrollSection";
+import { GlowCard } from "@/components/ui/spotlight-card";
 
 const Gallery = () => {
   const { data: galleryEvents = [], isLoading } = useQuery({
@@ -51,15 +52,16 @@ const Gallery = () => {
   const GalleryCard = ({ ge, i }: { ge: any; i: number }) => (
     <motion.div
       key={ge.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: i * 0.06 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ delay: i * 0.1, duration: 0.5 }}
     >
       <Link to={`/gallery/${ge.id}`} className="block">
-        <div className="rounded-xl border border-border bg-card overflow-hidden group card-hover">
+        <GlowCard glowColor="green" className="overflow-hidden bg-card p-0 group">
           <div className="aspect-video overflow-hidden bg-secondary">
             {ge.cover_image ? (
-              <img src={ge.cover_image} alt={ge.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src={ge.cover_image} alt={ge.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <ImageIcon className="h-12 w-12 text-muted-foreground" />
@@ -74,7 +76,7 @@ const Gallery = () => {
               {ge.year && <p className="text-xs text-muted-foreground">{ge.year}</p>}
             </div>
           </div>
-        </div>
+        </GlowCard>
       </Link>
     </motion.div>
   );
