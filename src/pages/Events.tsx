@@ -84,7 +84,7 @@ const EventCard = ({ event, i, onSelect }: { event: any; i: number; onSelect: ()
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ delay: i * 0.1, duration: 0.5 }}
+      transition={{ delay: i * 0.08, duration: 0.5 }}
       onClick={onSelect}
       className="cursor-pointer"
     >

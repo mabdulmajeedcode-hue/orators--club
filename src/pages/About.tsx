@@ -219,7 +219,7 @@ const About = () => {
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.2 }}
-                      transition={{ delay: i * 0.1, duration: 0.5 }}
+                      transition={{ delay: i * 0.08, duration: 0.5 }}
                     >
                       <GlowCard glowColor="green" className="bg-background p-6 h-full flex flex-col">
                         <Icon className="h-8 w-8 text-primary mb-4" />
@@ -248,7 +248,7 @@ const About = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                    transition={{ delay: i * 0.08, duration: 0.5 }}
                   >
                     <GlowCard glowColor="green" className="bg-card p-6 h-full flex flex-col">
                       <h3 className="font-display font-bold text-lg text-foreground mb-2">{card.name}</h3>
@@ -275,7 +275,7 @@ const About = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                    transition={{ delay: i * 0.08, duration: 0.5 }}
                   >
                     <GlowCard glowColor="green" className="bg-card p-6 h-full">
                       <Award className="h-7 w-7 text-primary mb-3" />
@@ -306,7 +306,7 @@ const About = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                    transition={{ delay: i * 0.08, duration: 0.5 }}
                   >
                     <GlowCard glowColor="green" className="bg-background p-6 h-full">
                       <h3 className="font-display font-semibold text-lg mb-3 text-foreground">{ch.name}</h3>

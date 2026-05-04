@@ -34,7 +34,7 @@ const StaffCoordinatorCard = ({ member, i }: { member: Member; i: number }) => (
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.2 }}
-    transition={{ delay: i * 0.1, duration: 0.5 }}
+    transition={{ delay: i * 0.08, duration: 0.5 }}
   >
     <GlowCard glowColor="green" className="p-0 bg-card">
     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden group cursor-pointer">
@@ -62,7 +62,7 @@ const GoverningCard = ({ member, i }: { member: Member; i: number }) => (
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.2 }}
-    transition={{ delay: i * 0.1, duration: 0.5 }}
+    transition={{ delay: i * 0.08, duration: 0.5 }}
   >
     <GlowCard glowColor="green" className="p-0 bg-card">
     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden group cursor-pointer">
