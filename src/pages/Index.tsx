@@ -60,31 +60,45 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Scroll Expansion Hero */}
-      <ScrollExpandMedia
-        mediaType="image"
-        mediaSrc={heroTeam}
-        bgImageSrc={heroTeam}
-        title="The Orators' Club"
-        date="Since 2003"
-        scrollToExpand="Scroll to explore"
-        textBlend
-      >
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
-          <p className="text-lg text-muted-foreground italic mb-8">
-            "Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally"
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="pulse-glow" asChild>
-              <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></a>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/events">Explore Events</Link>
-            </Button>
+      {/* Scroll Expansion Hero with overlaid original text */}
+      <div className="relative">
+        <ScrollExpandMedia
+          mediaType="image"
+          mediaSrc={heroTeam}
+          bgImageSrc={heroTeam}
+          title=""
+          date=""
+          scrollToExpand=""
+        >
+          <div />
+        </ScrollExpandMedia>
+        <div className="pointer-events-none absolute inset-0 top-0 h-screen z-20 flex items-center justify-center px-6">
+          <div className="pointer-events-auto text-center max-w-4xl mx-auto">
+            <div className="text-xs md:text-sm text-white/80 mb-6 space-y-1">
+              <p>Muffakham Jah College of Engineering and Technology</p>
+              <p>(Sultan-Ul-Uloom Education Society)</p>
+              <p>An Autonomous Institution</p>
+              <p>Approved by AICTE, Affiliated to Osmania University</p>
+              <p>Accredited by NAAC with A+ and NBA</p>
+            </div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white tracking-tight mb-4 drop-shadow-lg">
+              ORATORS' CLUB
+            </h1>
+            <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
+            <p className="text-base md:text-lg text-white/90 italic mb-8 max-w-2xl mx-auto">
+              "Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally"
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button size="lg" className="pulse-glow" asChild>
+                <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></a>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/events">Explore Events</Link>
+              </Button>
+            </div>
           </div>
         </div>
-      </ScrollExpandMedia>
+      </div>
 
       {/* Marquee strip */}
       <Marquee />
