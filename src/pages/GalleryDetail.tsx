@@ -186,8 +186,11 @@ const GalleryDetail = () => {
                       <img
                         src={img.image_url}
                         alt={img.caption || ""}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
+                        decoding="async"
+                        onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
+                        style={{ opacity: 0, transition: 'opacity 0.4s ease' }}
+                        className="w-full h-full object-cover max-w-full group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-300" />
                       {img.caption && (

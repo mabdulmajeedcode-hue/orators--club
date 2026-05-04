@@ -55,13 +55,21 @@ const Gallery = () => {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ delay: i * 0.1, duration: 0.5 }}
+      transition={{ delay: i * 0.06, duration: 0.5 }}
     >
       <Link to={`/gallery/${ge.id}`} className="block">
         <GlowCard glowColor="green" className="overflow-hidden bg-card p-0 group">
           <div className="aspect-video overflow-hidden bg-secondary">
             {ge.cover_image ? (
-              <img src={ge.cover_image} alt={ge.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <img
+                src={ge.cover_image}
+                alt={ge.title}
+                loading="lazy"
+                decoding="async"
+                onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
+                style={{ opacity: 0, transition: 'opacity 0.4s ease' }}
+                className="w-full h-full object-cover max-w-full group-hover:scale-110 transition-transform duration-500"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <ImageIcon className="h-12 w-12 text-muted-foreground" />
