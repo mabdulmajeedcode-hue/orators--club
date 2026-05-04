@@ -1,67 +1,78 @@
-'use client';
-import type React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { useEffect, useRef } from 'react';
 
-type FallingPatternProps = React.ComponentProps<'div'> & {
-  color?: string;
-  backgroundColor?: string;
-  duration?: number;
-  blurIntensity?: string;
-  density?: number;
-};
+export function FallingPattern() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-export function FallingPattern({
-  color = 'var(--primary)',
-  backgroundColor = 'var(--background)',
-  duration = 150,
-  blurIntensity = '1em',
-  density = 1,
-  className,
-}: FallingPatternProps) {
-  const generateBackgroundImage = () => {
-    const patterns = [
-      `radial-gradient(4px 100px at 0px 235px, ${color}, transparent)`,
-      `radial-gradient(4px 100px at 300px 235px, ${color}, transparent)`,
-      `radial-gradient(1.5px 1.5px at 150px 117.5px, ${color} 100%, transparent 150%)`,
-      `radial-gradient(4px 100px at 0px 252px, ${color}, transparent)`,
-      `radial-gradient(4px 100px at 300px 252px, ${color}, transparent)`,
-      `radial-gradient(1.5px 1.5px at 150px 126px, ${color} 100%, transparent 150%)`,
-      `radial-gradient(4px 100px at 0px 150px, ${color}, transparent)`,
-      `radial-gradient(4px 100px at 300px 150px, ${color}, transparent)`,
-      `radial-gradient(1.5px 1.5px at 150px 75px, ${color} 100%, transparent 150%)`,
-      `radial-gradient(4px 100px at 0px 253px, ${color}, transparent)`,
-      `radial-gradient(4px 100px at 300px 253px, ${color}, transparent)`,
-      `radial-gradient(1.5px 1.5px at 150px 126.5px, ${color} 100%, transparent 150%)`,
-    ];
-    return patterns.join(', ');
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-  const backgroundSizes = '300px 235px, 300px 235px, 300px 235px, 300px 252px, 300px 252px, 300px 252px, 300px 150px, 300px 150px, 300px 150px, 300px 253px, 300px 253px, 300px 253px';
-  const startPositions = '0px 220px, 3px 220px, 151.5px 337.5px, 25px 24px, 28px 24px, 176.5px 150px, 50px 16px, 53px 16px, 201.5px 91px, 75px 224px, 78px 224px, 226.5px 230.5px';
-  const endPositions = '0px 6800px, 3px 6800px, 151.5px 6917.5px, 25px 13632px, 28px 13632px, 176.5px 13758px, 50px 5416px, 53px 5416px, 201.5px 5491px, 75px 17175px, 78px 17175px, 226.5px 17301.5px';
+    let animationId: number;
+    const drops: { x: number; y: number; speed: number; opacity: number; length: number }[] = [];
+    const COUNT = 60;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (let i = 0; i < COUNT; i++) {
+      drops.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        speed: 0.8 + Math.random() * 1.2,
+        opacity: 0.2 + Math.random() * 0.4,
+        length: 10 + Math.random() * 20,
+      });
+    }
+
+    const isDark = () => !document.documentElement.classList.contains('light');
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drops.forEach((drop) => {
+        const color = isDark()
+          ? `rgba(163, 230, 53, ${drop.opacity})`
+          : `rgba(77, 124, 15, ${drop.opacity * 0.7})`;
+        ctx.beginPath();
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x, drop.y + drop.length);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        drop.y += drop.speed;
+        if (drop.y > canvas.height) {
+          drop.y = -drop.length;
+          drop.x = Math.random() * canvas.width;
+        }
+      });
+      animationId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
   return (
-    <div
-      className={cn('relative overflow-hidden', className)}
-    >
-      <div className="absolute inset-0" style={{ filter: `blur(${blurIntensity})` }}>
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: generateBackgroundImage(),
-            backgroundSize: backgroundSizes,
-          }}
-          animate={{
-            backgroundPosition: [startPositions, endPositions],
-          }}
-          transition={{
-            duration,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
-      </div>
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 0,
+        opacity: 1,
+      }}
+    />
   );
 }

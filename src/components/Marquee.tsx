@@ -3,7 +3,7 @@ const items = [
 ];
 
 const Marquee = () => {
-  const loop = [...items, ...items, ...items, ...items];
+  const loop = [...items, ...items];
   return (
     <div className="bg-background border-y border-border overflow-hidden py-4">
       <div className="flex whitespace-nowrap animate-marquee">

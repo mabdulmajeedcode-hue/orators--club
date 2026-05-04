@@ -15,7 +15,7 @@ import heroTeam from "@/assets/hero-team.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6 } })
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.6 } })
 };
 
 const features = [
@@ -131,7 +131,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  transition={{ delay: i * 0.08, duration: 0.5 }}
                 >
                   <GlowCard glowColor="green" className="h-full bg-background p-6">
                     <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
@@ -159,7 +159,7 @@ const Index = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  transition={{ delay: i * 0.08, duration: 0.5 }}
                 >
                   <s.icon className="h-8 w-8 text-primary mx-auto mb-3" />
                   <div className="text-4xl md:text-5xl font-display font-bold gradient-text mb-1">
