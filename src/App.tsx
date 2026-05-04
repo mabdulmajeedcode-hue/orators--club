@@ -9,7 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SitePopup from "@/components/SitePopup";
 import ScrollToTop from "@/components/ScrollToTop";
-import { FallingPattern } from "@/components/ui/falling-pattern";
+import { VantaBackground } from "@/components/ui/vanta-background";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -39,7 +39,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
-        <FallingPattern />
+        <VantaBackground />
         <div className="relative z-10">
           <Navbar />
           <SitePopup />
