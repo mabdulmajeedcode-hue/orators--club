@@ -1,27 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import { useEffect, useRef } from 'react';
+
+declare global {
+  interface Window {
+    VANTA: any;
+    THREE: any;
+  }
+}
 
 export function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement>(null);
   const vantaEffect = useRef<any>(null);
-  const [isLight, setIsLight] = useState(false);
 
   useEffect(() => {
-    const update = () => setIsLight(document.documentElement.classList.contains('light'));
-    update();
-    const obs = new MutationObserver(update);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    const loadVanta = async () => {
-      const VANTA = await import('vanta/dist/vanta.waves.min');
-      if (!mounted || !vantaRef.current) return;
-      vantaEffect.current = (VANTA as any).default({
+    let cancelled = false;
+    const init = () => {
+      if (cancelled || !vantaRef.current) return;
+      if (!window.VANTA || !window.THREE) {
+        setTimeout(init, 100);
+        return;
+      }
+      if (vantaEffect.current) vantaEffect.current.destroy();
+      vantaEffect.current = window.VANTA.WAVES({
         el: vantaRef.current,
-        THREE,
+        THREE: window.THREE,
         mouseControls: false,
         touchControls: false,
         gyroControls: false,
@@ -33,12 +34,12 @@ export function VantaBackground() {
         shininess: 68,
         waveHeight: 15,
         waveSpeed: 1,
-        zoom: 1.6,
+        zoom: 1.63,
       });
     };
-    loadVanta();
+    init();
     return () => {
-      mounted = false;
+      cancelled = true;
       if (vantaEffect.current) {
         try { vantaEffect.current.destroy(); } catch {}
         vantaEffect.current = null;
@@ -49,6 +50,7 @@ export function VantaBackground() {
   return (
     <div
       ref={vantaRef}
+      className="vanta-bg"
       style={{
         position: 'fixed',
         top: 0,
@@ -57,7 +59,6 @@ export function VantaBackground() {
         height: '100%',
         zIndex: 0,
         pointerEvents: 'none',
-        opacity: isLight ? 0.2 : 0.5,
       }}
     />
   );
