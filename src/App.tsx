@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import SitePopup from "@/components/SitePopup";
 import ScrollToTop from "@/components/ScrollToTop";
 import { VantaBackground } from "@/components/ui/vanta-background";
+import { CustomCursor } from "@/components/ui/custom-cursor";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <VantaBackground />
+        <CustomCursor />
         <div className="relative z-10">
           <Navbar />
           <SitePopup />

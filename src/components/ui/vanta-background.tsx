@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 export function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement>(null);
@@ -16,7 +17,6 @@ export function VantaBackground() {
   useEffect(() => {
     let mounted = true;
     const loadVanta = async () => {
-      const THREE = await import('three');
       const VANTA = await import('vanta/dist/vanta.waves.min');
       if (!mounted || !vantaRef.current) return;
       vantaEffect.current = (VANTA as any).default({
@@ -29,11 +29,11 @@ export function VantaBackground() {
         minWidth: 200,
         scale: 1.0,
         scaleMobile: 1.0,
-        color: 0x1a3d0a,
-        shininess: 40,
-        waveHeight: 12,
-        waveSpeed: 0.6,
-        zoom: 1.2,
+        color: 0x1e6103,
+        shininess: 68,
+        waveHeight: 15,
+        waveSpeed: 1,
+        zoom: 1.6,
       });
     };
     loadVanta();
@@ -57,7 +57,7 @@ export function VantaBackground() {
         height: '100%',
         zIndex: 0,
         pointerEvents: 'none',
-        opacity: isLight ? 0.15 : 0.35,
+        opacity: isLight ? 0.2 : 0.5,
       }}
     />
   );
