@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollSection from "@/components/ScrollSection";
 import { GlowCard } from "@/components/ui/spotlight-card";
+import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import Marquee from "@/components/Marquee";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import heroTeam from "@/assets/hero-team.jpg";
@@ -59,40 +60,30 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Static Hero */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        <img src={heroTeam} alt="Orators Club team" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/55" />
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative z-10 text-center max-w-4xl mx-auto"
+      {/* Scroll Expansion Hero — title slides out as media expands */}
+      <div className="relative">
+        <ScrollExpandMedia
+          mediaType="image"
+          mediaSrc={heroTeam}
+          bgImageSrc={heroTeam}
+          title="ORATORS CLUB"
         >
-          <div className="text-xs md:text-sm text-white/80 mb-6 space-y-1">
-            <p>Muffakham Jah College of Engineering and Technology</p>
-            <p>(Sultan-Ul-Uloom Education Society)</p>
-            <p>An Autonomous Institution</p>
-            <p>Approved by AICTE, Affiliated to Osmania University</p>
-            <p>Accredited by NAAC with A+ and NBA</p>
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="section-badge mb-4 inline-block">A Flagship of the Department of English, MJCET</span>
+            <p className="text-base md:text-lg text-muted-foreground italic mb-6">
+              "Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally"
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button size="lg" className="pulse-glow" asChild>
+                <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></a>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/events">Explore Events</Link>
+              </Button>
+            </div>
           </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white tracking-tight mb-4 drop-shadow-lg">
-            ORATORS' CLUB
-          </h1>
-          <span className="section-badge mb-6 inline-block">A Flagship of the Department of English, MJCET</span>
-          <p className="text-base md:text-lg text-white/90 italic mb-8 max-w-2xl mx-auto">
-            "Empowering speakers with confidence, eloquence, and influence to drive positive change locally and globally"
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="pulse-glow" asChild>
-              <a href="https://forms.gle/8CvC8bcG8fSY2t4p6" target="_blank" rel="noopener noreferrer">Join the Club <ArrowRight className="ml-2 h-4 w-4" /></a>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/events">Explore Events</Link>
-            </Button>
-          </div>
-        </motion.div>
-      </section>
+        </ScrollExpandMedia>
+      </div>
 
       {/* Marquee strip */}
       <Marquee />
